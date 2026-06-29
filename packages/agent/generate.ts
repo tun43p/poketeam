@@ -61,7 +61,10 @@ Demande de l'utilisateur: ${opts.prompt || "(aucune préférence particulière)"
             const inp = block.input;
             const bn = String(block.name);
             if (bn === "WebSearch")
-              yield { type: "progress", text: `Recherche les meilleures équipes : ${inp?.query ?? ""}` };
+              yield {
+                type: "progress",
+                text: `Recherche les meilleures équipes : ${inp?.query ?? ""}`,
+              };
             else if (bn === "WebFetch")
               yield { type: "progress", text: `Consulte une source : ${inp?.url ?? ""}` };
             else if (bn.endsWith("get_meta"))

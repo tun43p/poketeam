@@ -2,7 +2,9 @@
   "name": "poketeam",
   "type": "module",
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "dev": "bun --hot packages/server/server.ts",
     "start": "bun packages/server/server.ts",

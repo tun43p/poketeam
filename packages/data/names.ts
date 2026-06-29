@@ -23,7 +23,11 @@ export function inChampions(category: Category, name?: string | null): boolean {
 
 const qDisplay = db.query("SELECT name FROM lookup WHERE category=? AND lang=? AND en=? LIMIT 1");
 // Nom EN canonique → nom affiché dans la langue cible (fallback : l'EN lui-même).
-export function display(category: Category, en?: string | null, lang: "fr" | "en" = "fr"): string | null {
+export function display(
+  category: Category,
+  en?: string | null,
+  lang: "fr" | "en" = "fr",
+): string | null {
   if (!en) return null;
   if (lang === "en") return en;
   return (qDisplay.get(category, lang, en) as any)?.name ?? en;
@@ -45,7 +49,10 @@ let proseMap: Map<string, string> | null = null;
 // La BDD écrit les apostrophes en ’ (U+2019), l'IA/les users en ' — on unifie.
 const apos = (s: string) => s.replace(/[’‘]/g, "'");
 function buildProse() {
-  const rows = db.query("SELECT en, name FROM lookup WHERE lang='fr' AND en<>name").all() as { en: string; name: string }[];
+  const rows = db.query("SELECT en, name FROM lookup WHERE lang='fr' AND en<>name").all() as {
+    en: string;
+    name: string;
+  }[];
   proseMap = new Map();
   for (const r of rows) {
     const k = apos(r.en).toLowerCase();

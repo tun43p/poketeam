@@ -6,13 +6,7 @@ import globals from "globals";
 
 export default tseslint.config(
   {
-    ignores: [
-      "node_modules/**",
-      ".old/**",
-      "**/poke.db",
-      ".cache/**",
-      "**/*.d.ts",
-    ],
+    ignores: ["node_modules/**", ".old/**", "**/poke.db", ".cache/**", "**/*.d.ts"],
   },
 
   // Base + strict, type-aware rules for the whole TS codebase.

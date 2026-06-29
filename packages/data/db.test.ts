@@ -4,11 +4,23 @@ import { Database } from "bun:sqlite";
 
 const db = new Database(`${import.meta.dir}/poke.db`, { readonly: true });
 const norm = (s: string) =>
-  s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  s
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
 const canon = (cat: string, name: string) =>
-  (db.query("SELECT en FROM lookup WHERE category=? AND norm=? LIMIT 1").get(cat, norm(name)) as any)?.en ?? null;
+  (
+    db
+      .query("SELECT en FROM lookup WHERE category=? AND norm=? LIMIT 1")
+      .get(cat, norm(name)) as any
+  )?.en ?? null;
 const display = (cat: string, en: string, lang: string) =>
-  (db.query("SELECT name FROM lookup WHERE category=? AND lang=? AND en=? LIMIT 1").get(cat, lang, en) as any)?.name ?? null;
+  (
+    db
+      .query("SELECT name FROM lookup WHERE category=? AND lang=? AND en=? LIMIT 1")
+      .get(cat, lang, en) as any
+  )?.name ?? null;
 
 test("canonicalise toute graphie → EN", () => {
   expect(canon("move", "Lance-Soleil")).toBe("Solar Beam");
@@ -30,7 +42,11 @@ test("affiche EN → FR (lookup inverse)", () => {
 
 test("matrice d'efficacité des types (type_chart)", () => {
   const mult = (att: string, def: string) =>
-    (db.query("SELECT multiplier m FROM type_chart WHERE attacker=? AND defender=?").get(att, def) as any)?.m ?? 1;
+    (
+      db
+        .query("SELECT multiplier m FROM type_chart WHERE attacker=? AND defender=?")
+        .get(att, def) as any
+    )?.m ?? 1;
   expect(mult("Water", "Fire")).toBe(2);
   expect(mult("Fire", "Water")).toBe(0.5);
   expect(mult("Normal", "Ghost")).toBe(0);
@@ -38,7 +54,11 @@ test("matrice d'efficacité des types (type_chart)", () => {
 });
 
 test("tables de détail sans aucune colonne FR", () => {
-  const cols = (t: string) => db.query(`PRAGMA table_info(${t})`).all().map((c: any) => c.name);
+  const cols = (t: string) =>
+    db
+      .query(`PRAGMA table_info(${t})`)
+      .all()
+      .map((c: any) => c.name);
   for (const t of ["pokemon", "moves", "abilities", "items", "natures", "types"]) {
     expect(cols(t).some((c) => /fr/i.test(c))).toBe(false);
   }

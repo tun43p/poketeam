@@ -34,10 +34,20 @@ export async function getMeta(name: string, format: "Doubles" | "Singles") {
     moves: top("move", 8).map((r) => ({ name: r.name, usage: r.percentage })),
     items: top("item").map((r) => ({ name: r.name, usage: r.percentage })),
     abilities: top("ability").map((r) => ({ name: r.name, usage: r.percentage })),
-    natures: top("nature").map((r) => ({ name: r.name, up: r.stat_up, down: r.stat_down, usage: r.percentage })),
+    natures: top("nature").map((r) => ({
+      name: r.name,
+      up: r.stat_up,
+      down: r.stat_down,
+      usage: r.percentage,
+    })),
     ev_spreads: top("spread", 3).map((r) => ({
-      usage: r.percentage, hp: r.hp_points, atk: r.attack_points, def: r.defense_points,
-      spa: r.sp_atk_points, spd: r.sp_def_points, spe: r.speed_points,
+      usage: r.percentage,
+      hp: r.hp_points,
+      atk: r.attack_points,
+      def: r.defense_points,
+      spa: r.sp_atk_points,
+      spd: r.sp_def_points,
+      spe: r.speed_points,
     })),
     teammates: top("teammate").map((r) => ({ name: r.name, usage: r.percentage })),
   };

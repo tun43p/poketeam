@@ -1,11 +1,16 @@
 export type Mon = { id: number; fr: string; en: string; sprite: string; types?: string[] };
 export type Boxes = Record<string, string[]>;
 
-export const norm = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+export const norm = (s: string) =>
+  s
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase();
 
 // Distance de Levenshtein (tolérance aux fautes de frappe dans la recherche).
 export function levenshtein(a: string, b: string): number {
-  const m = a.length, n = b.length;
+  const m = a.length,
+    n = b.length;
   if (!m) return n;
   if (!n) return m;
   let prev = Array.from({ length: n + 1 }, (_, i) => i);
@@ -23,10 +28,24 @@ export function levenshtein(a: string, b: string): number {
 
 // Couleurs officielles des types (noms FR de Tyradex) pour les pastilles de faiblesses.
 export const TYPE_COLORS: Record<string, string> = {
-  Normal: "#a8a878", Feu: "#f08030", Eau: "#6890f0", Plante: "#78c850", Électrik: "#f8d030",
-  Glace: "#98d8d8", Combat: "#c03028", Poison: "#a040a0", Sol: "#e0c068", Vol: "#a890f0",
-  Psy: "#f85888", Insecte: "#a8b820", Roche: "#b8a038", Spectre: "#705898", Dragon: "#7038f8",
-  Ténèbres: "#705848", Acier: "#b8b8d0", Fée: "#ee99ac",
+  Normal: "#a8a878",
+  Feu: "#f08030",
+  Eau: "#6890f0",
+  Plante: "#78c850",
+  Électrik: "#f8d030",
+  Glace: "#98d8d8",
+  Combat: "#c03028",
+  Poison: "#a040a0",
+  Sol: "#e0c068",
+  Vol: "#a890f0",
+  Psy: "#f85888",
+  Insecte: "#a8b820",
+  Roche: "#b8a038",
+  Spectre: "#705898",
+  Dragon: "#7038f8",
+  Ténèbres: "#705848",
+  Acier: "#b8b8d0",
+  Fée: "#ee99ac",
 };
 
 export const Pokeball = () => <span className="pokeball" aria-hidden="true" />;
@@ -37,7 +56,8 @@ export function exportPdf(id: string, title: string) {
   const node = document.getElementById(id);
   if (!node) return;
   const styles = [...document.querySelectorAll("link[rel=stylesheet],style")]
-    .map((s) => s.outerHTML).join("");
+    .map((s) => s.outerHTML)
+    .join("");
   // Garde le rendu web (fond dégradé + overlay CRT) ; print-color-adjust force
   // l'impression des couleurs, sinon le navigateur blanchit les fonds.
   const print = `<style>

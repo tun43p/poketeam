@@ -5,7 +5,11 @@ import { db, type Category } from "./db";
 import { localize, display, localizeProse } from "./names";
 import { getPokemon, getMove, getAbility, getItem, getType } from "./reference";
 
-const DMG_CLASS_FR: Record<string, string> = { physical: "Physique", special: "Spéciale", status: "Statut" };
+const DMG_CLASS_FR: Record<string, string> = {
+  physical: "Physique",
+  special: "Spéciale",
+  status: "Statut",
+};
 
 // Effet (description) traduit en FR au build (table effects). Fallback : l'anglais.
 const qEffFr = db.query("SELECT fr FROM effects WHERE en=? LIMIT 1");
@@ -48,20 +52,28 @@ export function localizeTeam(team: any, lang: "fr" | "en" = "fr") {
           const info = getMove(mv.name);
           // Types contre lesquels l'attaque tape ×2 (seulement les attaques de dégâts).
           const isDamage = info && info.damage_class !== "status";
-          const strong = isDamage ? (getType(mv.type)?.attacking.super_effective ?? []).map((t) => T(t)) : [];
+          const strong = isDamage
+            ? (getType(mv.type)?.attacking.super_effective ?? []).map((t) => T(t))
+            : [];
           return {
             name: L("move", mv.name),
             type: T(mv.type),
             power: info?.power ?? null,
             accuracy: info?.accuracy ?? null,
             priority: info?.priority ?? 0,
-            category: info ? DMG_CLASS_FR[info.damage_class] ?? info.damage_class : null,
+            category: info ? (DMG_CLASS_FR[info.damage_class] ?? info.damage_class) : null,
             effect: effectFr(info?.effect, lang),
             strong_against: strong,
           };
         }),
-        weaknesses: (pok?.weaknesses ?? m.weaknesses ?? []).map((w: any) => ({ type: T(w.type), multiplier: w.multiplier })),
-        resistances: (pok?.resistances ?? []).map((w: any) => ({ type: T(w.type), multiplier: w.multiplier })),
+        weaknesses: (pok?.weaknesses ?? m.weaknesses ?? []).map((w: any) => ({
+          type: T(w.type),
+          multiplier: w.multiplier,
+        })),
+        resistances: (pok?.resistances ?? []).map((w: any) => ({
+          type: T(w.type),
+          multiplier: w.multiplier,
+        })),
         immunities: (pok?.immunities ?? []).map((t: string) => T(t)),
       };
     }),

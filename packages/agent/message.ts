@@ -55,8 +55,7 @@ Message du joueur: ${opts.message}`;
               yield { type: "progress", text: `Recherche sur internet : ${inp?.query ?? ""}` };
             else if (bn === "WebFetch")
               yield { type: "progress", text: `Consulte une source : ${inp?.url ?? ""}` };
-            else
-              yield { type: "progress", text: `Vérifie les données : ${inp?.name ?? ""}` };
+            else yield { type: "progress", text: `Vérifie les données : ${inp?.name ?? ""}` };
           }
         }
       } else if (m.type === "result" && m.subtype === "success") {

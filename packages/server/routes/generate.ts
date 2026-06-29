@@ -17,10 +17,7 @@ export const generateRoutes = {
 
       const selected = body.selected ?? [];
       if (!selected.length) {
-        return Response.json(
-          { error: "Sélectionne au moins un Pokémon." },
-          { status: 400 },
-        );
+        return Response.json({ error: "Sélectionne au moins un Pokémon." }, { status: 400 });
       }
 
       const format = body.format === "Singles" ? "Singles" : "Doubles";
@@ -40,7 +37,9 @@ export const generateRoutes = {
                   await saveTeam({ format, prompt: body.prompt ?? "", team: ev.team });
                 }
                 controller.enqueue(
-                  enc.encode(JSON.stringify({ type: "done", team: localizeTeam(ev.team, LANG) }) + "\n"),
+                  enc.encode(
+                    JSON.stringify({ type: "done", team: localizeTeam(ev.team, LANG) }) + "\n",
+                  ),
                 );
               } else {
                 controller.enqueue(enc.encode(JSON.stringify(ev) + "\n"));
@@ -48,9 +47,7 @@ export const generateRoutes = {
             }
           } catch (e) {
             controller.enqueue(
-              enc.encode(
-                JSON.stringify({ type: "error", error: String(e) }) + "\n",
-              ),
+              enc.encode(JSON.stringify({ type: "error", error: String(e) }) + "\n"),
             );
           } finally {
             controller.close();

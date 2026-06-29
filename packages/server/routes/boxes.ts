@@ -13,10 +13,7 @@ export const boxesRoutes = {
       };
 
       if (!name?.trim()) {
-        return Response.json(
-          { error: "Nom de slot requis." },
-          { status: 400 },
-        );
+        return Response.json({ error: "Nom de slot requis." }, { status: 400 });
       }
 
       return Response.json(await saveBox(name.trim(), mons ?? []));
@@ -34,15 +31,10 @@ export const boxesRoutes = {
     PUT: async (req: Req<{ name: string }>) => {
       const { to } = (await req.json()) as { to?: string };
       if (!to?.trim()) {
-        return Response.json(
-          { error: "Nouveau nom requis." },
-          { status: 400 },
-        );
+        return Response.json({ error: "Nouveau nom requis." }, { status: 400 });
       }
 
-      return Response.json(
-        await renameBox(decodeURIComponent(req.params.name), to.trim()),
-      );
+      return Response.json(await renameBox(decodeURIComponent(req.params.name), to.trim()));
     },
   },
 };

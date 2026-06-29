@@ -20,7 +20,11 @@ async function gql(query: string): Promise<any> {
 // Clé de recherche : minuscule, sans accent, sans ponctuation (les slugs "solar-beam"
 // se normalisent comme "Solar Beam" → pas besoin de les stocker en plus).
 const norm = (s: string) =>
-  s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  s
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
 
 // poke.db est écrit à côté de ce module (résolu via import.meta.dir, pas le cwd).
 const db = new Database(`${import.meta.dir}/poke.db`, { create: true });
@@ -29,9 +33,13 @@ const db = new Database(`${import.meta.dir}/poke.db`, { create: true });
 db.exec(`DROP TABLE IF EXISTS lookup`);
 db.exec(`CREATE TABLE lookup (category TEXT, lang TEXT, en TEXT, name TEXT, norm TEXT)`);
 db.exec(`DROP TABLE IF EXISTS pokemon`);
-db.exec(`CREATE TABLE pokemon (en TEXT PRIMARY KEY, dex_id INTEGER, sprite TEXT, types TEXT, abilities TEXT, stats TEXT, resistances TEXT)`);
+db.exec(
+  `CREATE TABLE pokemon (en TEXT PRIMARY KEY, dex_id INTEGER, sprite TEXT, types TEXT, abilities TEXT, stats TEXT, resistances TEXT)`,
+);
 db.exec(`DROP TABLE IF EXISTS moves`);
-db.exec(`CREATE TABLE moves (en TEXT PRIMARY KEY, type TEXT, power INTEGER, accuracy INTEGER, pp INTEGER, priority INTEGER, damage_class TEXT, effect TEXT)`);
+db.exec(
+  `CREATE TABLE moves (en TEXT PRIMARY KEY, type TEXT, power INTEGER, accuracy INTEGER, pp INTEGER, priority INTEGER, damage_class TEXT, effect TEXT)`,
+);
 db.exec(`DROP TABLE IF EXISTS abilities`);
 db.exec(`CREATE TABLE abilities (en TEXT PRIMARY KEY, effect TEXT)`);
 db.exec(`DROP TABLE IF EXISTS items`);
@@ -43,16 +51,21 @@ db.exec(`CREATE TABLE types (en TEXT PRIMARY KEY, sprite TEXT)`);
 db.exec(`DROP TABLE IF EXISTS type_chart`);
 // Matrice d'efficacité attaquant→défenseur (anglais). On ne stocke que le ≠1 ;
 // l'absence d'une paire = neutre (×1). multiplier ∈ {0, 0.5, 2}.
-db.exec(`CREATE TABLE type_chart (attacker TEXT, defender TEXT, multiplier REAL, PRIMARY KEY (attacker, defender))`);
+db.exec(
+  `CREATE TABLE type_chart (attacker TEXT, defender TEXT, multiplier REAL, PRIMARY KEY (attacker, defender))`,
+);
 
-const insLookup = db.prepare("INSERT INTO lookup (category, lang, en, name, norm) VALUES (?,?,?,?,?)");
+const insLookup = db.prepare(
+  "INSERT INTO lookup (category, lang, en, name, norm) VALUES (?,?,?,?,?)",
+);
 // Enregistre le nom EN canonique + ses graphies par langue. Une ligne par langue.
 function names(category: string, en: string, fr?: string | null) {
   insLookup.run(category, "en", en, en, norm(en));
   if (fr) insLookup.run(category, "fr", en, fr, norm(fr));
 }
 const qCanon = db.query("SELECT en FROM lookup WHERE category=? AND norm=? LIMIT 1");
-const canon = (cat: string, name: string): string => (qCanon.get(cat, norm(name)) as any)?.en ?? name;
+const canon = (cat: string, name: string): string =>
+  (qCanon.get(cat, norm(name)) as any)?.en ?? name;
 
 const tx = db.transaction((fn: () => void) => fn());
 
@@ -66,7 +79,8 @@ const typeData = await gql(`{ pokemon_v2_type(where:{id:{_lte:18}}){
 const insType = db.prepare("INSERT OR REPLACE INTO types (en, sprite) VALUES (?,?)");
 tx(() => {
   for (const t of typeData.pokemon_v2_type) {
-    const en = t.en?.[0]?.name, fr = t.fr?.[0]?.name;
+    const en = t.en?.[0]?.name,
+      fr = t.fr?.[0]?.name;
     if (!en) continue;
     insType.run(en, spriteByFr.get(norm(fr ?? "")) ?? null);
     names("type", en, fr);
@@ -75,14 +89,18 @@ tx(() => {
 
 // ---- Matrice d'efficacité des types (PokéAPI) ----
 console.log("Efficacité des types…");
-const teData = await gql(`{ pokemon_v2_typeefficacy(where:{damage_type_id:{_lte:18}, target_type_id:{_lte:18}, damage_factor:{_neq:100}}){
+const teData =
+  await gql(`{ pokemon_v2_typeefficacy(where:{damage_type_id:{_lte:18}, target_type_id:{_lte:18}, damage_factor:{_neq:100}}){
   damage_factor
   att:pokemon_v2_type{ en:pokemon_v2_typenames(where:{pokemon_v2_language:{name:{_eq:"en"}}}){name} }
   def:pokemonV2TypeByTargetTypeId{ en:pokemon_v2_typenames(where:{pokemon_v2_language:{name:{_eq:"en"}}}){name} } }}`);
-const insChart = db.prepare("INSERT OR REPLACE INTO type_chart (attacker, defender, multiplier) VALUES (?,?,?)");
+const insChart = db.prepare(
+  "INSERT OR REPLACE INTO type_chart (attacker, defender, multiplier) VALUES (?,?,?)",
+);
 tx(() => {
   for (const e of teData.pokemon_v2_typeefficacy) {
-    const att = e.att?.en?.[0]?.name, def = e.def?.en?.[0]?.name;
+    const att = e.att?.en?.[0]?.name,
+      def = e.def?.en?.[0]?.name;
     if (!att || !def) continue;
     insChart.run(att, def, e.damage_factor / 100);
   }
@@ -105,13 +123,20 @@ tx(() => {
     const en = m.en?.[0]?.name;
     if (!en) continue;
     // PokéAPI laisse un token $effect_chance dans le texte → on le remplace par la valeur réelle.
-    const effect = (m.eff?.texts?.[0]?.short_effect ?? null)?.replaceAll(
-      "$effect_chance",
-      String(m.move_effect_chance ?? ""),
-    ) ?? null;
+    const effect =
+      (m.eff?.texts?.[0]?.short_effect ?? null)?.replaceAll(
+        "$effect_chance",
+        String(m.move_effect_chance ?? ""),
+      ) ?? null;
     insMove.run(
-      en, m.type?.en?.[0]?.name ?? null, m.power, m.accuracy, m.pp, m.priority,
-      m.pokemon_v2_movedamageclass?.name ?? null, effect,
+      en,
+      m.type?.en?.[0]?.name ?? null,
+      m.power,
+      m.accuracy,
+      m.pp,
+      m.priority,
+      m.pokemon_v2_movedamageclass?.name ?? null,
+      effect,
     );
     names("move", en, m.fr?.[0]?.name);
   }
@@ -192,10 +217,14 @@ async function mt(q: string): Promise<string | null> {
 
 const effSet = new Set<string>();
 for (const t of ["moves", "abilities", "items"])
-  for (const row of db.query(`SELECT effect e FROM ${t} WHERE effect IS NOT NULL AND effect != ''`).all() as any[])
+  for (const row of db
+    .query(`SELECT effect e FROM ${t} WHERE effect IS NOT NULL AND effect != ''`)
+    .all() as any[])
     effSet.add(row.e);
 const todo = [...effSet].filter((e) => !(e in mtCache));
-console.log(`  ${effSet.size} effets uniques · ${todo.length} à traduire · ${effSet.size - todo.length} en cache`);
+console.log(
+  `  ${effSet.size} effets uniques · ${todo.length} à traduire · ${effSet.size - todo.length} en cache`,
+);
 
 let done = 0;
 const POOL = 8;
@@ -238,11 +267,18 @@ tx(() => {
     const en = p.name?.en;
     if (!en || p.pokedex_id < 1) continue;
     insPoke.run(
-      en, p.pokedex_id, p.sprites?.regular ?? null,
+      en,
+      p.pokedex_id,
+      p.sprites?.regular ?? null,
       JSON.stringify((p.types ?? []).map((t: any) => canon("type", t.name))),
       JSON.stringify((p.talents ?? []).map((t: any) => canon("ability", t.name))),
       JSON.stringify(p.stats ?? null),
-      JSON.stringify((p.resistances ?? []).map((r: any) => ({ type: canon("type", r.name), multiplier: r.multiplier }))),
+      JSON.stringify(
+        (p.resistances ?? []).map((r: any) => ({
+          type: canon("type", r.name),
+          multiplier: r.multiplier,
+        })),
+      ),
     );
     names("pokemon", en, p.name?.fr);
   }
@@ -285,13 +321,17 @@ await Promise.all(
     while (ci < jobs.length) {
       const [n, fmt] = jobs[ci++];
       try {
-        const d: any = await cfetch(`https://championsbattledata.com/api/battle/${fmt}/${encodeURIComponent(n)}`);
+        const d: any = await cfetch(
+          `https://championsbattledata.com/api/battle/${fmt}/${encodeURIComponent(n)}`,
+        );
         for (const r of d.rows ?? []) if (r.category === "held_item") items.push(r.name);
       } catch {}
     }
   }),
 );
-tx(() => { for (const it of items) champ("item", it); });
+tx(() => {
+  for (const it of items) champ("item", it);
+});
 
 // Index de recherche (après insertion = plus rapide).
 db.exec(`CREATE INDEX idx_lookup_norm ON lookup (category, norm)`);

@@ -23,30 +23,52 @@ function App() {
   const hash = useHash();
 
   useEffect(() => {
-    void fetch("/api/pokemon").then((r) => r.json()).then((list: Mon[]) => {
-      setAll(list);
-      setByEn(new Map(list.map((m) => [m.en, m])));
-    });
-    void fetch("/api/boxes").then((r) => r.json()).then(setBoxes);
-    void fetch("/api/types").then((r) => r.json()).then((ts: { name: string; image: string }[]) => {
-      setTypeImg(new Map(ts.map((t) => [t.name, t.image])));
-    }).catch(() => undefined);
+    void fetch("/api/pokemon")
+      .then((r) => r.json())
+      .then((list: Mon[]) => {
+        setAll(list);
+        setByEn(new Map(list.map((m) => [m.en, m])));
+      });
+    void fetch("/api/boxes")
+      .then((r) => r.json())
+      .then(setBoxes);
+    void fetch("/api/types")
+      .then((r) => r.json())
+      .then((ts: { name: string; image: string }[]) => {
+        setTypeImg(new Map(ts.map((t) => [t.name, t.image])));
+      })
+      .catch(() => undefined);
   }, []);
 
   return (
     <main>
       <header>
-        <h1><a href="#/"><Pokeball />PokéTeam <span className="sub">Champions</span></a></h1>
+        <h1>
+          <a href="#/">
+            <Pokeball />
+            PokéTeam <span className="sub">Champions</span>
+          </a>
+        </h1>
         <nav>
-          <a href="#/" className={hash === "#/" ? "on" : ""}>Générer une équipe</a>
-          <a href="#/boxes" className={hash.startsWith("#/boxes") ? "on" : ""}>Mes boîtes</a>
-          <a href="#/teams" className={hash.startsWith("#/teams") ? "on" : ""}>Mes équipes</a>
+          <a href="#/" className={hash === "#/" ? "on" : ""}>
+            Générer une équipe
+          </a>
+          <a href="#/boxes" className={hash.startsWith("#/boxes") ? "on" : ""}>
+            Mes boîtes
+          </a>
+          <a href="#/teams" className={hash.startsWith("#/teams") ? "on" : ""}>
+            Mes équipes
+          </a>
         </nav>
       </header>
 
-      {hash.startsWith("#/boxes") ? <BoxesPage all={all} byEn={byEn} boxes={boxes} setBoxes={setBoxes} />
-        : hash.startsWith("#/teams") ? <TeamsPage byEn={byEn} typeImg={typeImg} />
-        : <Home byEn={byEn} boxes={boxes} typeImg={typeImg} />}
+      {hash.startsWith("#/boxes") ? (
+        <BoxesPage all={all} byEn={byEn} boxes={boxes} setBoxes={setBoxes} />
+      ) : hash.startsWith("#/teams") ? (
+        <TeamsPage byEn={byEn} typeImg={typeImg} />
+      ) : (
+        <Home byEn={byEn} boxes={boxes} typeImg={typeImg} />
+      )}
     </main>
   );
 }

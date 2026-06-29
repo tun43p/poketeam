@@ -34,9 +34,7 @@ export const teamsRoutes = {
         return Response.json({ error: "Message vide." }, { status: 400 });
       }
 
-      const pool = (entry.team?.team || [])
-        .map((m: any) => m.name)
-        .filter(Boolean);
+      const pool = (entry.team?.team || []).map((m: any) => m.name).filter(Boolean);
       const stream = new ReadableStream({
         async start(controller) {
           let answer = "";
@@ -51,12 +49,20 @@ export const teamsRoutes = {
             })) {
               if (ev.type === "version") {
                 version = ev.team; // ANGLAIS, à persister
-                controller.enqueue(enc.encode(JSON.stringify({ type: "version", team: localizeTeam(ev.team, LANG) }) + "\n"));
+                controller.enqueue(
+                  enc.encode(
+                    JSON.stringify({ type: "version", team: localizeTeam(ev.team, LANG) }) + "\n",
+                  ),
+                );
                 continue;
               }
               if (ev.type === "answer") {
                 answer = ev.text; // ANGLAIS-truffé, à persister tel quel
-                controller.enqueue(enc.encode(JSON.stringify({ type: "answer", text: localizeProse(ev.text, LANG) }) + "\n"));
+                controller.enqueue(
+                  enc.encode(
+                    JSON.stringify({ type: "answer", text: localizeProse(ev.text, LANG) }) + "\n",
+                  ),
+                );
                 continue;
               }
               controller.enqueue(enc.encode(JSON.stringify(ev) + "\n"));
@@ -80,9 +86,7 @@ export const teamsRoutes = {
             }
           } catch (e) {
             controller.enqueue(
-              enc.encode(
-                JSON.stringify({ type: "error", error: String(e) }) + "\n",
-              ),
+              enc.encode(JSON.stringify({ type: "error", error: String(e) }) + "\n"),
             );
           } finally {
             controller.close();
@@ -97,17 +101,13 @@ export const teamsRoutes = {
   "/api/teams/:i/version": {
     POST: async (req: Req<{ i: string }>) => {
       const { v } = (await req.json()) as { v?: number };
-      return Response.json(
-        localizeTeams(await setActiveVersion(Number(req.params.i), Number(v))),
-      );
+      return Response.json(localizeTeams(await setActiveVersion(Number(req.params.i), Number(v))));
     },
   },
   "/api/teams/:i/rename": {
     PUT: async (req: Req<{ i: string }>) => {
       const { name } = (await req.json()) as { name?: string };
-      return Response.json(
-        localizeTeams(await renameTeam(Number(req.params.i), name ?? "")),
-      );
+      return Response.json(localizeTeams(await renameTeam(Number(req.params.i), name ?? "")));
     },
   },
 };

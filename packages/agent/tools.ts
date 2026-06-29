@@ -2,7 +2,16 @@
 // renvoient les noms ANGLAIS officiels + un champ `champions` (légal dans Champions ?).
 import { tool, createSdkMcpServer } from "@anthropic-ai/claude-agent-sdk";
 import { z } from "zod";
-import { getPokemon, getMeta, getMove, getAbility, getItem, getType, canon, inChampions } from "@poketeam/data";
+import {
+  getPokemon,
+  getMeta,
+  getMove,
+  getAbility,
+  getItem,
+  getType,
+  canon,
+  inChampions,
+} from "@poketeam/data";
 
 const ok = (v: unknown) => ({
   content: [{ type: "text" as const, text: JSON.stringify(v) }],
@@ -62,7 +71,12 @@ export const tools = createSdkMcpServer({
         category: z.enum(["pokemon", "move", "ability", "item", "nature", "type"]),
         name: z.string().describe("English name (any language accepted)"),
       },
-      async ({ category, name }) => ok({ name: canon(category, name) ?? name, category, available: inChampions(category, name) }),
+      async ({ category, name }) =>
+        ok({
+          name: canon(category, name) ?? name,
+          category,
+          available: inChampions(category, name),
+        }),
       ro,
     ),
     tool(

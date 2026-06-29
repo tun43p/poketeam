@@ -4,11 +4,7 @@ import { read, write } from "./read";
 
 export const getTeams = async () => (await read()).teams;
 
-export async function saveTeam(entry: {
-  format: string;
-  prompt: string;
-  team: any;
-}) {
+export async function saveTeam(entry: { format: string; prompt: string; team: any }) {
   const s = await read();
   s.teams.unshift({ savedAt: new Date().toISOString(), ...entry });
   await write(s);
@@ -26,12 +22,7 @@ export async function deleteTeam(index: number) {
 }
 
 // Nouvelle version d'équipe (suite à une modif) + trace dans le fil de discussion.
-export async function addVersion(
-  index: number,
-  team: any,
-  prompt: string,
-  note: string,
-) {
+export async function addVersion(index: number, team: any, prompt: string, note: string) {
   const s = await read();
   const t = s.teams[index];
   if (t) {
@@ -40,10 +31,7 @@ export async function addVersion(
     t.active = 0;
     t.team = team;
     t.savedAt = at;
-    (t.chat ??= []).push(
-      { role: "user", text: prompt },
-      { role: "assistant", text: note },
-    );
+    (t.chat ??= []).push({ role: "user", text: prompt }, { role: "assistant", text: note });
     await write(s);
   }
 
@@ -63,18 +51,11 @@ export async function setActiveVersion(index: number, v: number) {
   return s.teams;
 }
 
-export async function appendChat(
-  index: number,
-  user: string,
-  assistant: string,
-) {
+export async function appendChat(index: number, user: string, assistant: string) {
   const s = await read();
   const t = s.teams[index];
   if (t) {
-    (t.chat ??= []).push(
-      { role: "user", text: user },
-      { role: "assistant", text: assistant },
-    );
+    (t.chat ??= []).push({ role: "user", text: user }, { role: "assistant", text: assistant });
     await write(s);
   }
 
