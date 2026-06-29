@@ -83,7 +83,7 @@ function TeamThread({ index, entry, onUpdate }: {
 // ---------- Écran équipes : liste des équipes générées ----------
 export function TeamsPage({ byEn, typeImg }: { byEn: Map<string, Mon>; typeImg: Map<string, string> }) {
   const [teams, setTeams] = useState<any[] | null>(null);
-  useEffect(() => { fetch("/api/teams").then((r) => r.json()).then(setTeams); }, []);
+  useEffect(() => { void fetch("/api/teams").then((r) => r.json()).then(setTeams); }, []);
 
   async function renameTeam(i: number) {
     const name = window.prompt("Nouveau nom de l'équipe :");
@@ -112,8 +112,8 @@ export function TeamsPage({ byEn, typeImg }: { byEn: Map<string, Mon>; typeImg: 
             <span className="meta"> · {t.format} · {new Date(t.savedAt).toLocaleString("fr-FR")}</span>
             <span className="team-actions">
               <button onClick={(e) => { e.preventDefault(); exportPdf(`pdf-team-${i}`, t.name || "Équipe PokéTeam"); }}>📄 PDF</button>
-              <button onClick={(e) => { e.preventDefault(); renameTeam(i); }}>Renommer</button>
-              <button className="del" onClick={(e) => { e.preventDefault(); deleteTeam(i); }}>Supprimer</button>
+              <button onClick={(e) => { e.preventDefault(); void renameTeam(i); }}>Renommer</button>
+              <button className="del" onClick={(e) => { e.preventDefault(); void deleteTeam(i); }}>Supprimer</button>
             </span>
           </summary>
           <details className="sub" open>

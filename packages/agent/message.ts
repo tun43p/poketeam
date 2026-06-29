@@ -49,7 +49,7 @@ Message du joueur: ${opts.message}`;
       if (m.type === "assistant") {
         for (const block of m.message.content as any[]) {
           if (block.type === "tool_use") {
-            const inp = block.input as any;
+            const inp = block.input;
             const bn = String(block.name);
             if (bn === "WebSearch")
               yield { type: "progress", text: `Recherche sur internet : ${inp?.query ?? ""}` };

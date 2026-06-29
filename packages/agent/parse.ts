@@ -9,7 +9,7 @@ export function parseTeam(raw: string): any {
     }
   };
 
-  const fenced = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
+  const fenced = /```(?:json)?\s*([\s\S]*?)```/.exec(raw);
   let t = tryParse(fenced?.[1]?.trim());
   if (t?.team) return t;
 

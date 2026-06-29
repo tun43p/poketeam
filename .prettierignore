@@ -1,0 +1,5 @@
+node_modules
+.old
+bun.lock
+*.db
+.cache

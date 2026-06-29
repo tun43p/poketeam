@@ -23,14 +23,14 @@ function App() {
   const hash = useHash();
 
   useEffect(() => {
-    fetch("/api/pokemon").then((r) => r.json()).then((list: Mon[]) => {
+    void fetch("/api/pokemon").then((r) => r.json()).then((list: Mon[]) => {
       setAll(list);
       setByEn(new Map(list.map((m) => [m.en, m])));
     });
-    fetch("/api/boxes").then((r) => r.json()).then(setBoxes);
-    fetch("/api/types").then((r) => r.json()).then((ts: { name: string; image: string }[]) => {
+    void fetch("/api/boxes").then((r) => r.json()).then(setBoxes);
+    void fetch("/api/types").then((r) => r.json()).then((ts: { name: string; image: string }[]) => {
       setTypeImg(new Map(ts.map((t) => [t.name, t.image])));
-    }).catch(() => {});
+    }).catch(() => undefined);
   }, []);
 
   return (

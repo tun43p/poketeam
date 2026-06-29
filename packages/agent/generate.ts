@@ -58,7 +58,7 @@ Demande de l'utilisateur: ${opts.prompt || "(aucune préférence particulière)"
       if (m.type === "assistant") {
         for (const block of m.message.content as any[]) {
           if (block.type === "tool_use") {
-            const inp = block.input as any;
+            const inp = block.input;
             const bn = String(block.name);
             if (bn === "WebSearch")
               yield { type: "progress", text: `Recherche les meilleures équipes : ${inp?.query ?? ""}` };

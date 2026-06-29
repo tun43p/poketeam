@@ -2,6 +2,6 @@
 import { pokemonList, getTypes } from "@poketeam/data";
 
 export const pokemonRoutes = {
-  "/api/pokemon": async () => Response.json(await pokemonList()),
-  "/api/types": async () => Response.json(await getTypes()),
+  "/api/pokemon": () => Response.json(pokemonList()),
+  "/api/types": () => Response.json(getTypes()),
 };

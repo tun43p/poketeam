@@ -63,7 +63,7 @@ export function BoxesPage({ all, byEn, boxes, setBoxes }: { all: Mon[]; byEn: Ma
 
   async function rename(slot: string) {
     const to = window.prompt("Nouveau nom de la boîte :", slot);
-    if (to == null || !to.trim()) return;
+    if (!to?.trim()) return;
     setBoxes(await fetch(`/api/boxes/${encodeURIComponent(slot)}/rename`, {
       method: "PUT", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ to: to.trim() }),

@@ -9,7 +9,7 @@ export function levenshtein(a: string, b: string): number {
   if (!m) return n;
   if (!n) return m;
   let prev = Array.from({ length: n + 1 }, (_, i) => i);
-  let cur = new Array(n + 1);
+  let cur = new Array<number>(n + 1);
   for (let i = 1; i <= m; i++) {
     cur[0] = i;
     for (let j = 1; j <= n; j++) {

@@ -6,9 +6,21 @@
   "scripts": {
     "dev": "bun --hot packages/server/server.ts",
     "start": "bun packages/server/server.ts",
-    "build:db": "bun packages/data/build.ts"
+    "build:db": "bun packages/data/build.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
-    "bun-types": "^1.3.14"
+    "@eslint/js": "^10.0.1",
+    "bun-types": "^1.3.14",
+    "eslint": "^10.6.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.7.0",
+    "prettier": "^3.9.1",
+    "typescript-eslint": "^8.62.0"
   }
 }

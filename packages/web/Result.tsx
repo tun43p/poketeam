@@ -55,7 +55,7 @@ export function Result({ result, byEn, typeImg }: { result: any; byEn: Map<strin
               {m.base_stats && (
                 <div className="stats">
                   {STATS.map(([k, label]) => (
-                    <span key={label as string} className="stat"><b>{label}</b> {m.base_stats[k] ?? "—"}</span>
+                    <span key={label} className="stat"><b>{label}</b> {m.base_stats[k] ?? "—"}</span>
                   ))}
                 </div>
               )}
