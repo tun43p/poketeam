@@ -27,7 +27,7 @@ export const teamsRoutes = {
     POST: async (req: Req<{ i: string }>) => {
       const i = Number(req.params.i);
       const { message } = (await req.json()) as { message?: string };
-      const entry = (await getTeams())[i];
+      const entry = (await getTeams()).at(i);
       if (!entry) {
         return Response.json({ error: "Équipe introuvable." }, { status: 404 });
       }
@@ -35,7 +35,7 @@ export const teamsRoutes = {
         return Response.json({ error: "Message vide." }, { status: 400 });
       }
 
-      const pool = (entry.team.team || []).map((m) => m.name).filter(Boolean);
+      const pool = entry.team.team.map((m) => m.name).filter(Boolean);
       const stream = new ReadableStream({
         async start(controller) {
           let answer = "";

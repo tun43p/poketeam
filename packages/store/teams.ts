@@ -25,10 +25,10 @@ export async function deleteTeam(index: number) {
 // Nouvelle version d'équipe (suite à une modif) + trace dans le fil de discussion.
 export async function addVersion(index: number, team: Team, prompt: string, note: string) {
   const s = await read();
-  const t = s.teams[index];
+  const t = s.teams.at(index);
   if (t) {
     const at = new Date().toISOString();
-    t.versions!.unshift({ team, prompt, at });
+    (t.versions ??= []).unshift({ team, prompt, at });
     t.active = 0;
     t.team = team;
     t.savedAt = at;
@@ -42,10 +42,10 @@ export async function addVersion(index: number, team: Team, prompt: string, note
 // Revenir à une version : la version active devient celle demandée.
 export async function setActiveVersion(index: number, v: number) {
   const s = await read();
-  const t = s.teams[index];
-  if (t && v >= 0 && v < t.versions!.length) {
+  const t = s.teams.at(index);
+  if (t?.versions && v >= 0 && v < t.versions.length) {
     t.active = v;
-    t.team = t.versions![v].team;
+    t.team = t.versions[v].team;
     await write(s);
   }
 
@@ -54,7 +54,7 @@ export async function setActiveVersion(index: number, v: number) {
 
 export async function appendChat(index: number, user: string, assistant: string) {
   const s = await read();
-  const t = s.teams[index];
+  const t = s.teams.at(index);
   if (t) {
     (t.chat ??= []).push({ role: "user", text: user }, { role: "assistant", text: assistant });
     await write(s);

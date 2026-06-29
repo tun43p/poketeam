@@ -28,6 +28,9 @@ export default tseslint.config(
       // no-undef (which is type-blind) only adds false positives for globals like
       // Response/ReadableStream/Bun. typescript-eslint recommends turning it off.
       "no-undef": "off",
+      // Interpolating numbers into strings is fine (this is the rule's own default;
+      // the strict preset disables it). Keeps `${count}` logging readable.
+      "@typescript-eslint/restrict-template-expressions": ["error", { allowNumber: true }],
     },
   },
 

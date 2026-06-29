@@ -14,7 +14,11 @@ type Event =
   | { type: "error"; error: string };
 
 // Entrées d'outils que l'on inspecte pour les messages de progression.
-type ToolInput = { query?: string; url?: string; name?: string };
+interface ToolInput {
+  query?: string;
+  url?: string;
+  name?: string;
+}
 
 const MAX_ATTEMPTS = 3;
 

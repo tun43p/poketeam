@@ -64,7 +64,10 @@ export interface Team {
   team: TeamMon[];
 }
 
-export type ChatMessage = { role: "user" | "assistant"; text: string };
+export interface ChatMessage {
+  role: "user" | "assistant";
+  text: string;
+}
 
 export interface TeamVersion {
   team: Team;

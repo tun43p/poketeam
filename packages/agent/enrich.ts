@@ -5,7 +5,6 @@ import { canon, getPokemon, getMove } from "@poketeam/data";
 import type { Team } from "@poketeam/types";
 
 export function enrichTeam(team: Team) {
-  if (!team.team) return;
   for (const m of team.team) {
     m.name = canon("pokemon", m.name) ?? m.name;
     const p = getPokemon(m.name);

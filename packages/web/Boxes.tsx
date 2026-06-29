@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
+import { useMemo, useState, type KeyboardEvent } from "react";
 import { levenshtein, norm, TYPE_COLORS, type Boxes, type Mon } from "./lib";
 
 // ---------- Écran boîtes : créer / éditer / supprimer ----------
@@ -36,9 +36,13 @@ export function BoxesPage({
     return hits.slice(0, 8);
   }, [q, all]);
 
-  useEffect(() => {
+  // Réinitialise l'index surligné quand la recherche change (ajustement au rendu,
+  // pattern React recommandé plutôt qu'un effet qui appelle setState).
+  const [prevQ, setPrevQ] = useState(q);
+  if (q !== prevQ) {
+    setPrevQ(q);
     setActive(0);
-  }, [q]);
+  }
 
   const add = (m: Mon) => {
     if (!picked.some((p) => p.id === m.id)) setPicked([...picked, m]);
@@ -117,16 +121,21 @@ export function BoxesPage({
         <div className="slots">
           {slots.map(([slot, mons]) => (
             <span key={slot} className="slot">
-              <button className="load" onClick={() => edit(slot)}>
+              <button
+                className="load"
+                onClick={() => {
+                  edit(slot);
+                }}
+              >
                 {slot} ({mons.length}) ✎
               </button>
-              <button className="dup" title="Dupliquer" onClick={() => duplicate(slot)}>
+              <button className="dup" title="Dupliquer" onClick={() => void duplicate(slot)}>
                 ⧉
               </button>
-              <button className="ren" title="Renommer" onClick={() => rename(slot)}>
+              <button className="ren" title="Renommer" onClick={() => void rename(slot)}>
                 ✎
               </button>
-              <button className="del" title="Supprimer" onClick={() => del(slot)}>
+              <button className="del" title="Supprimer" onClick={() => void del(slot)}>
                 ✕
               </button>
             </span>
@@ -135,20 +144,24 @@ export function BoxesPage({
       )}
 
       <div className="editor">
-        <h3>{name && boxes[name] ? `Éditer « ${name} »` : "Nouvelle boîte"}</h3>
+        <h3>{name && name in boxes ? `Éditer « ${name} »` : "Nouvelle boîte"}</h3>
 
         <input
           className="slotname"
           placeholder="Nom de la boîte (ex. « Boîte PC 1 »)"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => {
+            setName(e.target.value);
+          }}
         />
 
         <div className="search">
           <input
             placeholder="Chercher un Pokémon (accents ignorés)…"
             value={q}
-            onChange={(e) => setQ(e.target.value)}
+            onChange={(e) => {
+              setQ(e.target.value);
+            }}
             onKeyDown={onSearchKey}
           />
           {matches.length > 0 && (
@@ -157,8 +170,12 @@ export function BoxesPage({
                 <li
                   key={m.id}
                   className={idx === active ? "active" : ""}
-                  onMouseEnter={() => setActive(idx)}
-                  onClick={() => add(m)}
+                  onMouseEnter={() => {
+                    setActive(idx);
+                  }}
+                  onClick={() => {
+                    add(m);
+                  }}
                 >
                   {m.sprite && <img src={m.sprite} alt="" />} {m.fr}{" "}
                   <span className="muted">/ {m.en}</span>
@@ -178,7 +195,9 @@ export function BoxesPage({
               <button
                 key={m.id}
                 className="cell filled"
-                onClick={() => setPicked(picked.filter((p) => p.id !== m.id))}
+                onClick={() => {
+                  setPicked(picked.filter((p) => p.id !== m.id));
+                }}
               >
                 {m.sprite && <img src={m.sprite} alt={m.fr} />}
                 <span className="tip">
@@ -206,7 +225,11 @@ export function BoxesPage({
 
         <div className="editor-actions">
           <span className="muted">{picked.length} Pokémon</span>
-          <button className="generate" onClick={save} disabled={!name.trim() || !picked.length}>
+          <button
+            className="generate"
+            onClick={() => void save()}
+            disabled={!name.trim() || !picked.length}
+          >
             💾 Enregistrer la boîte
           </button>
           {(picked.length > 0 || name) && (

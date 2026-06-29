@@ -100,28 +100,28 @@ const norm = (s: string) =>
 const db = new Database(`${import.meta.dir}/poke.db`, { create: true });
 
 // ---- Schéma : détail en anglais pur, `lookup` = unique table multilingue ----
-db.exec(`DROP TABLE IF EXISTS lookup`);
-db.exec(`CREATE TABLE lookup (category TEXT, lang TEXT, en TEXT, name TEXT, norm TEXT)`);
-db.exec(`DROP TABLE IF EXISTS pokemon`);
-db.exec(
+db.run(`DROP TABLE IF EXISTS lookup`);
+db.run(`CREATE TABLE lookup (category TEXT, lang TEXT, en TEXT, name TEXT, norm TEXT)`);
+db.run(`DROP TABLE IF EXISTS pokemon`);
+db.run(
   `CREATE TABLE pokemon (en TEXT PRIMARY KEY, dex_id INTEGER, sprite TEXT, types TEXT, abilities TEXT, stats TEXT, resistances TEXT)`,
 );
-db.exec(`DROP TABLE IF EXISTS moves`);
-db.exec(
+db.run(`DROP TABLE IF EXISTS moves`);
+db.run(
   `CREATE TABLE moves (en TEXT PRIMARY KEY, type TEXT, power INTEGER, accuracy INTEGER, pp INTEGER, priority INTEGER, damage_class TEXT, effect TEXT)`,
 );
-db.exec(`DROP TABLE IF EXISTS abilities`);
-db.exec(`CREATE TABLE abilities (en TEXT PRIMARY KEY, effect TEXT)`);
-db.exec(`DROP TABLE IF EXISTS items`);
-db.exec(`CREATE TABLE items (en TEXT PRIMARY KEY, category TEXT, effect TEXT)`);
-db.exec(`DROP TABLE IF EXISTS natures`);
-db.exec(`CREATE TABLE natures (en TEXT PRIMARY KEY, up TEXT, down TEXT)`);
-db.exec(`DROP TABLE IF EXISTS types`);
-db.exec(`CREATE TABLE types (en TEXT PRIMARY KEY, sprite TEXT)`);
-db.exec(`DROP TABLE IF EXISTS type_chart`);
+db.run(`DROP TABLE IF EXISTS abilities`);
+db.run(`CREATE TABLE abilities (en TEXT PRIMARY KEY, effect TEXT)`);
+db.run(`DROP TABLE IF EXISTS items`);
+db.run(`CREATE TABLE items (en TEXT PRIMARY KEY, category TEXT, effect TEXT)`);
+db.run(`DROP TABLE IF EXISTS natures`);
+db.run(`CREATE TABLE natures (en TEXT PRIMARY KEY, up TEXT, down TEXT)`);
+db.run(`DROP TABLE IF EXISTS types`);
+db.run(`CREATE TABLE types (en TEXT PRIMARY KEY, sprite TEXT)`);
+db.run(`DROP TABLE IF EXISTS type_chart`);
 // Matrice d'efficacité attaquant→défenseur (anglais). On ne stocke que le ≠1 ;
 // l'absence d'une paire = neutre (×1). multiplier ∈ {0, 0.5, 2}.
-db.exec(
+db.run(
   `CREATE TABLE type_chart (attacker TEXT, defender TEXT, multiplier REAL, PRIMARY KEY (attacker, defender))`,
 );
 
@@ -138,7 +138,9 @@ const qCanon = db.query<{ en: string }, [string, string]>(
 );
 const canon = (cat: string, name: string): string => qCanon.get(cat, norm(name))?.en ?? name;
 
-const tx = db.transaction((fn: () => void) => fn());
+const tx = db.transaction((fn: () => void) => {
+  fn();
+});
 
 // ---- Types (PokéAPI = EN/FR ; Tyradex = icônes UI) ----
 console.log("Types…");
@@ -275,7 +277,9 @@ const MT_CACHE = ".cache/mt-fr.json";
 let mtCache: Record<string, string> = {};
 try {
   mtCache = (await Bun.file(MT_CACHE).json()) as Record<string, string>;
-} catch {}
+} catch {
+  /* best effort : échecs réseau ignorés */
+}
 
 async function mt(q: string): Promise<string | null> {
   const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=fr&dt=t&q=${encodeURIComponent(q)}`;
@@ -284,7 +288,9 @@ async function mt(q: string): Promise<string | null> {
       const r = (await fetch(url).then((res) => res.json())) as [(string | null)[][]];
       const out = r[0].map((s) => s[0] ?? "").join("");
       if (out) return out;
-    } catch {}
+    } catch {
+      /* best effort : échecs réseau ignorés */
+    }
   }
   return null; // échec → on gardera l'anglais au runtime
 }
@@ -315,8 +321,8 @@ await Promise.all(
 );
 await Bun.write(MT_CACHE, JSON.stringify(mtCache));
 
-db.exec(`DROP TABLE IF EXISTS effects`);
-db.exec(`CREATE TABLE effects (en TEXT PRIMARY KEY, fr TEXT)`);
+db.run(`DROP TABLE IF EXISTS effects`);
+db.run(`CREATE TABLE effects (en TEXT PRIMARY KEY, fr TEXT)`);
 const insEff = db.prepare("INSERT OR REPLACE INTO effects (en, fr) VALUES (?,?)");
 let translated = 0;
 tx(() => {
@@ -368,8 +374,8 @@ console.log("Pokémon Champions (disponibilité)…");
 const CUA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36";
 const cfetch = <T>(u: string) =>
   fetch(u, { headers: { "User-Agent": CUA } }).then((r) => r.json() as Promise<T>);
-db.exec(`DROP TABLE IF EXISTS champions`);
-db.exec(`CREATE TABLE champions (category TEXT, norm TEXT, PRIMARY KEY (category, norm))`);
+db.run(`DROP TABLE IF EXISTS champions`);
+db.run(`CREATE TABLE champions (category TEXT, norm TEXT, PRIMARY KEY (category, norm))`);
 const insChamp = db.prepare("INSERT OR IGNORE INTO champions (category, norm) VALUES (?,?)");
 const champ = (cat: string, name?: string | null) => {
   if (name) insChamp.run(cat, norm(name));
@@ -378,14 +384,14 @@ const champ = (cat: string, name?: string | null) => {
 const champIdx = await cfetch<ChampIndex>(
   "https://championsbattledata.com/data/pokemon-index.json",
 );
-const champNames: string[] = champIdx.pokemon.map((p) => p.battleName || p.name);
+const champNames: string[] = champIdx.pokemon.map((p) => p.battleName ?? p.name);
 tx(() => {
   for (const p of champIdx.pokemon) {
-    champ("pokemon", p.battleName || p.name);
+    champ("pokemon", p.battleName ?? p.name);
     for (const mv of p.learnableMoveNames ?? []) champ("move", mv);
     for (const f of p.summary?.forms ?? []) {
-      for (const a of String(f.abilities ?? "").split("|")) champ("ability", a.trim());
-      for (const a of String(f.hidden_ability ?? "").split("|")) champ("ability", a.trim());
+      for (const a of (f.abilities ?? "").split("|")) champ("ability", a.trim());
+      for (const a of (f.hidden_ability ?? "").split("|")) champ("ability", a.trim());
     }
   }
 });
@@ -404,7 +410,9 @@ await Promise.all(
           `https://championsbattledata.com/api/battle/${fmt}/${encodeURIComponent(n)}`,
         );
         for (const r of d.rows ?? []) if (r.category === "held_item") items.push(r.name);
-      } catch {}
+      } catch {
+        /* best effort : échecs réseau ignorés */
+      }
     }
   }),
 );
@@ -413,8 +421,8 @@ tx(() => {
 });
 
 // Index de recherche (après insertion = plus rapide).
-db.exec(`CREATE INDEX idx_lookup_norm ON lookup (category, norm)`);
-db.exec(`CREATE INDEX idx_lookup_en ON lookup (category, lang, en)`);
+db.run(`CREATE INDEX idx_lookup_norm ON lookup (category, norm)`);
+db.run(`CREATE INDEX idx_lookup_en ON lookup (category, lang, en)`);
 
 const count = (t: string) => (db.query(`SELECT count(*) c FROM ${t}`).get() as { c: number }).c;
 console.log(

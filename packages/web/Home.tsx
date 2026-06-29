@@ -30,7 +30,9 @@ function RefineBar({
       await streamGenerate(
         { selected: pool, prompt, format, refine: current },
         {
-          onProgress: (t) => setSteps((s) => [...s, t]),
+          onProgress: (t) => {
+            setSteps((s) => [...s, t]);
+          },
           onError: setError,
           onDone: (team) => {
             onDone(team, prompt);
@@ -50,11 +52,13 @@ function RefineBar({
       <textarea
         placeholder="Affiner : « remplace le mur par un sweeper », « plus de résistance au Feu », « change la nature de… »"
         value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
+        onChange={(e) => {
+          setPrompt(e.target.value);
+        }}
         rows={2}
         disabled={loading}
       />
-      <button className="generate" onClick={run} disabled={loading || !prompt.trim()}>
+      <button className="generate" onClick={() => void run()} disabled={loading || !prompt.trim()}>
         {loading ? "Affinage en cours…" : "✨ Affiner l'équipe"}
       </button>
       {loading && steps.length > 0 && <p className="current">🧠 {steps[steps.length - 1]}</p>}
@@ -95,7 +99,9 @@ export function Home({
       await streamGenerate(
         { selected: pool, prompt, format },
         {
-          onProgress: (t) => setSteps((s) => [...s, t]),
+          onProgress: (t) => {
+            setSteps((s) => [...s, t]);
+          },
           onError: setError,
           // Le serveur persiste l'équipe (en anglais) avant d'émettre "done".
           onDone: (team) => {
@@ -116,7 +122,13 @@ export function Home({
       <h2>Générer une équipe</h2>
       <div className="formats">
         {(["Doubles", "Singles"] as const).map((f) => (
-          <button key={f} className={format === f ? "on" : ""} onClick={() => setFormat(f)}>
+          <button
+            key={f}
+            className={format === f ? "on" : ""}
+            onClick={() => {
+              setFormat(f);
+            }}
+          >
             {f === "Doubles" ? "Duo (Double)" : "Solo (Simple)"}
           </button>
         ))}
@@ -133,7 +145,9 @@ export function Home({
             <button
               key={name}
               className={selected === name ? "load on" : "load"}
-              onClick={() => setSelected(name)}
+              onClick={() => {
+                setSelected(name);
+              }}
             >
               {name} ({mons.length})
             </button>
@@ -157,11 +171,17 @@ export function Home({
       <textarea
         placeholder="Décris ce que tu veux : « team plutôt défensive, autour du Trick Room… »"
         value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
+        onChange={(e) => {
+          setPrompt(e.target.value);
+        }}
         rows={3}
       />
 
-      <button className="generate" onClick={generate} disabled={loading || !pool.length}>
+      <button
+        className="generate"
+        onClick={() => void generate()}
+        disabled={loading || !pool.length}
+      >
         {loading ? "Génération en cours…" : `Composer la meilleure team (depuis ${pool.length})`}
       </button>
 
@@ -184,7 +204,11 @@ export function Home({
             <a href="#/teams" className="muted">
               voir Mes équipes →
             </a>
-            <button onClick={() => exportPdf("pdf-home", "Mon équipe PokéTeam")}>
+            <button
+              onClick={() => {
+                exportPdf("pdf-home", "Mon équipe PokéTeam");
+              }}
+            >
               📄 Export PDF
             </button>
           </div>

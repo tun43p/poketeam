@@ -75,6 +75,8 @@ function buildProse() {
 export function localizeProse(text?: string | null, lang: "fr" | "en" = "fr"): string | null {
   if (!text || lang === "en") return text ?? null;
   if (!proseRe || !proseMap) buildProse();
+  const re = proseRe;
   const map = proseMap;
-  return apos(text).replace(proseRe!, (m) => map?.get(m.toLowerCase()) ?? m);
+  if (!re || !map) return text;
+  return apos(text).replace(re, (m) => map.get(m.toLowerCase()) ?? m);
 }

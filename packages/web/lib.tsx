@@ -1,6 +1,12 @@
 import type { Team, StoredTeam } from "@poketeam/types";
 
-export type Mon = { id: number; fr: string; en: string; sprite: string; types?: string[] };
+export interface Mon {
+  id: number;
+  fr: string;
+  en: string;
+  sprite: string;
+  types?: string[];
+}
 export type Boxes = Record<string, string[]>;
 
 // Évènements ndjson émis par le serveur pendant la génération / le chat.
@@ -78,6 +84,9 @@ export function exportPdf(id: string, title: string) {
   </style>`;
   const w = window.open("", "_blank", "width=900,height=1200");
   if (!w) return;
+  // document.write reste l'API adaptée à une fenêtre d'impression : elle garantit
+  // l'évènement `load` (attendre le chargement des sprites avant de mesurer la hauteur).
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
   w.document.write(
     `<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>${title}</title>${styles}${print}</head>` +
       `<body><div id="pdfwrap">${node.outerHTML}</div></body></html>`,
@@ -103,7 +112,8 @@ export async function streamNdjson(url: string, body: unknown, onEvent: (ev: Str
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  const reader = res.body!.getReader();
+  if (!res.body) return;
+  const reader = res.body.getReader();
   const dec = new TextDecoder();
   let buf = "";
   for (;;) {
@@ -111,7 +121,7 @@ export async function streamNdjson(url: string, body: unknown, onEvent: (ev: Str
     if (done) break;
     buf += dec.decode(value, { stream: true });
     const lines = buf.split("\n");
-    buf = lines.pop()!;
+    buf = lines.pop() ?? "";
     for (const l of lines) if (l.trim()) onEvent(JSON.parse(l) as StreamEvent);
   }
 }

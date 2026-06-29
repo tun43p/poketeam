@@ -5,7 +5,7 @@
 import { migrate } from "./migrate";
 import type { Store } from "@poketeam/types";
 
-const FILE = Bun.env.STORE_FILE || "store.json";
+const FILE = Bun.env.STORE_FILE ?? "store.json";
 
 export async function read(): Promise<Store> {
   const f = Bun.file(FILE);

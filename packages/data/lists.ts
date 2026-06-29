@@ -31,5 +31,5 @@ export function getTypes(): { name: string; image: string }[] {
       "SELECT en, sprite FROM types WHERE sprite IS NOT NULL",
     )
     .all()
-    .map((t) => ({ name: display("type", t.en)!, image: t.sprite }));
+    .map((t) => ({ name: display("type", t.en) ?? t.en, image: t.sprite }));
 }

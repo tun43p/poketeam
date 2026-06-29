@@ -12,7 +12,7 @@ export async function saveBox(name: string, mons: string[]) {
 
 export async function deleteBox(name: string) {
   const s = await read();
-  delete s.boxes[name];
+  Reflect.deleteProperty(s.boxes, name);
   await write(s);
   return s.boxes;
 }
@@ -31,7 +31,7 @@ export async function renameBox(old: string, to: string) {
   const s = await read();
   if (old in s.boxes && old !== to) {
     s.boxes[to] = s.boxes[old];
-    delete s.boxes[old];
+    Reflect.deleteProperty(s.boxes, old);
     await write(s);
   }
 

@@ -19,9 +19,9 @@ function TeamThread({
   const [step, setStep] = useState("");
   const [error, setError] = useState("");
 
-  const versions = entry.versions || [];
+  const versions = entry.versions ?? [];
   const active = entry.active ?? 0;
-  const chat = entry.chat || [];
+  const chat = entry.chat ?? [];
 
   async function send() {
     const message = msg.trim();
@@ -60,7 +60,7 @@ function TeamThread({
         <ul className="versionlist">
           {versions.map((vv, idx) => (
             <li key={idx} className={idx === active ? "on" : ""}>
-              <button onClick={() => revert(idx)} disabled={idx === active}>
+              <button onClick={() => void revert(idx)} disabled={idx === active}>
                 {idx === active ? "✓ actuelle" : "Restaurer"}
               </button>
               <span className="vmeta">
@@ -91,11 +91,13 @@ function TeamThread({
       <textarea
         placeholder="Pose une question ou demande une modif : « comment la jouer ? », « rends-la plus défensive », « change l'objet de… »"
         value={msg}
-        onChange={(e) => setMsg(e.target.value)}
+        onChange={(e) => {
+          setMsg(e.target.value);
+        }}
         rows={2}
         disabled={loading}
       />
-      <button className="generate" onClick={send} disabled={loading || !msg.trim()}>
+      <button className="generate" onClick={() => void send()} disabled={loading || !msg.trim()}>
         {loading ? "Réflexion en cours…" : "➤ Envoyer"}
       </button>
     </div>
@@ -154,7 +156,7 @@ export function TeamsPage({
       {teams.map((t, i) => (
         <details key={i} open={i === 0}>
           <summary>
-            <strong>{t.name || t.team.team.map((m) => m.name_fr).join(", ")}</strong>
+            <strong>{t.name ?? t.team.team.map((m) => m.name_fr).join(", ")}</strong>
             <span className="meta">
               {" "}
               · {t.format} · {new Date(t.savedAt).toLocaleString("fr-FR")}
@@ -163,7 +165,7 @@ export function TeamsPage({
               <button
                 onClick={(e) => {
                   e.preventDefault();
-                  exportPdf(`pdf-team-${i}`, t.name || "Équipe PokéTeam");
+                  exportPdf(`pdf-team-${i}`, t.name ?? "Équipe PokéTeam");
                 }}
               >
                 📄 PDF
@@ -196,7 +198,9 @@ export function TeamsPage({
           <TeamThread
             index={i}
             entry={t}
-            onUpdate={(entry) => setTeams((ts) => ts!.map((x, k) => (k === i ? entry : x)))}
+            onUpdate={(entry) => {
+              setTeams((ts) => (ts ?? []).map((x, k) => (k === i ? entry : x)));
+            }}
           />
         </details>
       ))}

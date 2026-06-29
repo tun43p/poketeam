@@ -27,7 +27,6 @@ function effectFr(en?: string | null, lang: "fr" | "en" = "fr"): string | null {
 // (les effets restent en anglais tant qu'il n'y a pas de cache de traduction).
 // La prose (role/note/strategy) est laissée telle quelle. Ne mute pas l'équipe stockée.
 export function localizeTeam(team: Team, lang: "fr" | "en" = "fr"): Team {
-  if (!team.team) return team;
   const L = (cat: Category, v?: string | null) => localize(cat, v, lang);
   const T = (t?: string | null) => display("type", t, lang);
   return {

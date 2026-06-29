@@ -57,7 +57,6 @@ export function Result({
   typeImg: Map<string, string>;
 }) {
   const team = result.team;
-  if (!team.team) return null;
   return (
     <section className="result">
       {team.strategy && <p className="strategy">{team.strategy}</p>}
@@ -122,7 +121,7 @@ export function Result({
                 <p className="evs">
                   EV :{" "}
                   {Object.entries(m.evs)
-                    .filter(([, v]) => Number(v) > 0)
+                    .filter(([, v]) => v > 0)
                     .map(([k, v]) => `${v} ${EV_LABELS[k] ?? k.toUpperCase()}`)
                     .join(" · ") || "—"}
                 </p>

@@ -8,9 +8,13 @@ import { BoxesPage } from "./Boxes";
 function useHash() {
   const [h, setH] = useState(location.hash || "#/");
   useEffect(() => {
-    const f = () => setH(location.hash || "#/");
+    const f = () => {
+      setH(location.hash || "#/");
+    };
     addEventListener("hashchange", f);
-    return () => removeEventListener("hashchange", f);
+    return () => {
+      removeEventListener("hashchange", f);
+    };
   }, []);
   return h;
 }
@@ -73,4 +77,5 @@ function App() {
   );
 }
 
-createRoot(document.getElementById("root")!).render(<App />);
+const rootEl = document.getElementById("root");
+if (rootEl) createRoot(rootEl).render(<App />);
