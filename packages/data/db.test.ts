@@ -2,7 +2,7 @@
 import { expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
 
-const db = new Database(`${import.meta.dir}/poke.db`, { readonly: true });
+const db = new Database(`${import.meta.dir}/../../poke.db`, { readonly: true });
 const norm = (s: string) =>
   s
     .normalize("NFD")

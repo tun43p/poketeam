@@ -96,8 +96,8 @@ const norm = (s: string) =>
     .toLowerCase()
     .replace(/[^a-z0-9]/g, "");
 
-// poke.db est écrit à côté de ce module (résolu via import.meta.dir, pas le cwd).
-const db = new Database(`${import.meta.dir}/poke.db`, { create: true });
+// poke.db est écrit à la RACINE du projet (résolu via import.meta.dir → ../.., pas le cwd).
+const db = new Database(`${import.meta.dir}/../../poke.db`, { create: true });
 
 // ---- Schéma : détail en anglais pur, `lookup` = unique table multilingue ----
 db.run(`DROP TABLE IF EXISTS lookup`);
