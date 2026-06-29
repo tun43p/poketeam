@@ -4,12 +4,6 @@
   "workspaces": {
     "": {
       "name": "poketeam",
-      "dependencies": {
-        "@poketeam/agent": "workspace:*",
-        "@poketeam/data": "workspace:*",
-        "@poketeam/store": "workspace:*",
-        "@poketeam/web": "workspace:*",
-      },
     },
     "packages/agent": {
       "name": "@poketeam/agent",
@@ -23,6 +17,16 @@
     "packages/data": {
       "name": "@poketeam/data",
       "version": "0.0.0",
+    },
+    "packages/server": {
+      "name": "@poketeam/server",
+      "version": "0.0.0",
+      "dependencies": {
+        "@poketeam/agent": "workspace:*",
+        "@poketeam/data": "workspace:*",
+        "@poketeam/store": "workspace:*",
+        "@poketeam/web": "workspace:*",
+      },
     },
     "packages/store": {
       "name": "@poketeam/store",
@@ -74,6 +78,8 @@
     "@poketeam/agent": ["@poketeam/agent@workspace:packages/agent"],
 
     "@poketeam/data": ["@poketeam/data@workspace:packages/data"],
+
+    "@poketeam/server": ["@poketeam/server@workspace:packages/server"],
 
     "@poketeam/store": ["@poketeam/store@workspace:packages/store"],
 

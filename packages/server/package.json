@@ -1,0 +1,13 @@
+{
+  "name": "@poketeam/server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "module": "server.ts",
+  "dependencies": {
+    "@poketeam/agent": "workspace:*",
+    "@poketeam/data": "workspace:*",
+    "@poketeam/store": "workspace:*",
+    "@poketeam/web": "workspace:*"
+  }
+}
