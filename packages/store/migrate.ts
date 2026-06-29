@@ -1,5 +1,5 @@
-// Migration : ramène une équipe (ancien format FR avec name_fr/name_en, OU déjà EN)
-// vers l'ANGLAIS canonique via la BDD. Idempotent : une équipe déjà EN reste identique.
+// Migration: brings a team (old FR format with name_fr/name_en, OR already EN)
+// to canonical ENGLISH via the DB. Idempotent: a team already in EN stays identical.
 import { canon, type Category } from "@poketeam/data";
 import type { StoredTeam, Team } from "@poketeam/types";
 
@@ -37,8 +37,8 @@ function toCanonicalTeam(team: Team | undefined): Team | undefined {
   return team;
 }
 
-// Migration additive : `versions` ajoutées si absentes, puis canonicalisation EN
-// de l'équipe active et de toutes ses versions. Idempotent.
+// Additive migration: `versions` added if absent, then EN canonicalization
+// of the active team and all its versions. Idempotent.
 export function migrate(t: StoredTeam) {
   if (!t.versions) {
     t.versions = [{ team: t.team, prompt: t.prompt, at: t.savedAt }];

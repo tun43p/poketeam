@@ -1,6 +1,6 @@
-// L'IA ne produit que de l'anglais. Le serveur RECANONICALISE chaque nom via la BDD
-// (aucune valeur n'entre sans passer par canon()) et réinjecte les données
-// déterministes (types/faiblesses, type d'attaque). L'équipe stockée est 100% EN.
+// The AI only produces English. The server RECANONICALIZES every name via the DB
+// (no value enters without going through canon()) and re-injects the deterministic
+// data (types/weaknesses, move type). The stored team is 100% EN.
 import { canon, getPokemon, getMove } from "@poketeam/data";
 import type { Team } from "@poketeam/types";
 
@@ -10,7 +10,7 @@ export function enrichTeam(team: Team) {
     const p = getPokemon(m.name);
     if (!("error" in p)) {
       m.types = p.types;
-      m.weaknesses = p.weaknesses; // [{type, multiplier}], EN, autoritaire
+      m.weaknesses = p.weaknesses; // [{type, multiplier}], EN, authoritative
     } else {
       m.types = [];
       m.weaknesses = [];
@@ -23,7 +23,7 @@ export function enrichTeam(team: Team) {
       if (typeof mv === "string") continue;
       const c = canon("move", mv.name);
       if (c) mv.name = c;
-      mv.type = getMove(mv.name)?.type ?? mv.type ?? null; // type d'attaque = BDD, jamais l'IA
+      mv.type = getMove(mv.name)?.type ?? mv.type ?? null; // move type = DB, never the AI
     }
   }
 }

@@ -1,7 +1,7 @@
-// Persistance utilisateur : boîtes (slots de Pokémon) + équipes générées.
-// Un seul fichier JSON, stocké 100% en ANGLAIS canonique (l'affichage est localisé
-// au rendu côté serveur). ponytail: pas de lock, un seul utilisateur local.
-// Surchargé par STORE_FILE pour les tests, afin de ne JAMAIS toucher le vrai store.json.
+// User persistence: boxes (Pokémon slots) + generated teams.
+// A single JSON file, stored 100% in canonical ENGLISH (display is localized
+// at render time on the server side). ponytail: no lock, a single local user.
+// Overridden by STORE_FILE for tests, so as to NEVER touch the real store.json.
 import { migrate } from "./migrate";
 import type { Store } from "@poketeam/types";
 
@@ -12,7 +12,7 @@ export async function read(): Promise<Store> {
   const s: Store = (await f.exists()) ? ((await f.json()) as Store) : { boxes: {}, teams: [] };
   const before = JSON.stringify(s.teams);
   s.teams.forEach(migrate);
-  // Auto-réparation du fichier sur disque : on réécrit UNE fois si la migration a changé quelque chose.
+  // Auto-repair of the on-disk file: we rewrite ONCE if the migration changed anything.
   if (JSON.stringify(s.teams) !== before) await write(s);
   return s;
 }

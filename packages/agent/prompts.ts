@@ -1,8 +1,8 @@
-// Prompts système de l'agent. L'IA raisonne/écrit la prose en FRANÇAIS mais TOUS les
-// noms du JSON sont en ANGLAIS officiel, validés via les outils. Le serveur
-// recanonicalise + remplit weaknesses/types/type d'attaque.
+// System prompts for the agent. The AI reasons/writes the prose in FRENCH but ALL the
+// JSON names are in official ENGLISH, validated via the tools. The server
+// recanonicalizes + fills in weaknesses/types/move type.
 
-// Le JSON n'a qu'UN champ "name" (anglais).
+// The JSON has only ONE "name" field (English).
 const SCHEMA_EN = `{
   "strategy": "synthèse de la stratégie d'équipe (français)",
   "team": [

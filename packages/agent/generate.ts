@@ -1,6 +1,6 @@
-// Génération d'équipe : émet des étapes de progression au fil des appels d'outils de
-// l'agent, puis l'équipe finale. Si le modèle renvoie un JSON inexploitable, on relance
-// la génération (jusqu'à MAX_ATTEMPTS) : l'utilisateur ne voit JAMAIS le JSON brut.
+// Team generation: emits progress steps as the agent's tool calls happen, then the
+// final team. If the model returns unusable JSON, we retry the generation (up to
+// MAX_ATTEMPTS): the user NEVER sees the raw JSON.
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import { tools, ALLOWED_TOOLS } from "./tools";
 import { SYSTEM } from "./prompts";
@@ -13,7 +13,7 @@ type Event =
   | { type: "done"; team: Team }
   | { type: "error"; error: string };
 
-// Entrées d'outils que l'on inspecte pour les messages de progression.
+// Tool inputs that we inspect for the progress messages.
 interface ToolInput {
   query?: string;
   url?: string;
@@ -26,7 +26,7 @@ export async function* generateTeamStream(opts: {
   selected: string[];
   prompt: string;
   format: "Doubles" | "Singles";
-  refine?: Team; // équipe actuelle à modifier (re-prompt)
+  refine?: Team; // current team to modify (re-prompt)
 }): AsyncGenerator<Event> {
   const base = `Format: ${opts.format === "Doubles" ? "Double (duo)" : "Simple (solo)"}.
 Boîte du joueur (pool disponible, ${opts.selected.length} Pokémon): ${opts.selected.join(", ")}.`;
@@ -59,7 +59,7 @@ Demande de l'utilisateur: ${opts.prompt || "(aucune préférence particulière)"
         mcpServers: { poke: tools },
         allowedTools: ALLOWED_TOOLS,
         permissionMode: "bypassPermissions",
-        persistSession: false, // ne rien écrire sur disque (~/.claude/projects)
+        persistSession: false, // do not write anything to disk (~/.claude/projects)
         maxTurns: 30,
       },
     })) {

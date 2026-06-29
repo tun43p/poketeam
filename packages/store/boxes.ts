@@ -1,4 +1,4 @@
-// Boîtes : slots nommés de Pokémon (noms EN). CRUD + duplication + renommage.
+// Boxes: named slots of Pokémon (EN names). CRUD + duplication + renaming.
 import { read, write } from "./read";
 
 export const getBoxes = async () => (await read()).boxes;

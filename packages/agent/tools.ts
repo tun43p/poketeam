@@ -1,5 +1,5 @@
-// Outils MCP exposés à l'agent : tous lisent poke.db (lecture seule, déterministe) et
-// renvoient les noms ANGLAIS officiels + un champ `champions` (légal dans Champions ?).
+// MCP tools exposed to the agent: all read poke.db (read-only, deterministic) and
+// return the official ENGLISH names + a `champions` field (legal in Champions?).
 import { tool, createSdkMcpServer } from "@anthropic-ai/claude-agent-sdk";
 import { z } from "zod";
 import {
@@ -13,8 +13,8 @@ import {
   inChampions,
 } from "@poketeam/data";
 
-// Le SDK attend un handler qui renvoie une Promise ; on enveloppe ici pour que les
-// handlers synchrones restent non-`async` (pas de require-await superflu).
+// The SDK expects a handler that returns a Promise; we wrap here so that synchronous
+// handlers stay non-`async` (no superfluous require-await).
 const ok = (v: unknown) =>
   Promise.resolve({
     content: [{ type: "text" as const, text: JSON.stringify(v) }],
@@ -22,7 +22,7 @@ const ok = (v: unknown) =>
 
 const ro = { annotations: { readOnlyHint: true } };
 
-// Liste blanche d'outils partagée par les deux générateurs (génération + coaching).
+// Whitelist of tools shared by both generators (generation + coaching).
 export const ALLOWED_TOOLS = [
   "mcp__poke__get_pokemon",
   "mcp__poke__get_move",

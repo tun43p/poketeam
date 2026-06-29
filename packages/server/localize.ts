@@ -1,5 +1,5 @@
-// La data est stockée en anglais ; on la traduit pour l'affichage à la sortie.
-// ponytail: langue figée en "fr" pour l'instant — la Phase 5 la lira depuis le store.
+// Data is stored in English; we translate it for display on output.
+// ponytail: language hardcoded to "fr" for now — Phase 5 will read it from the store.
 import { localizeTeam, localizeProse } from "@poketeam/data";
 import type { StoredTeam } from "@poketeam/types";
 

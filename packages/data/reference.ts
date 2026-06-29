@@ -1,5 +1,5 @@
-// Lookups de référence pour l'agent et l'UI (typage, stats, attaques, talents, objets,
-// efficacité des types). Tout en ANGLAIS (l'IA travaille en EN). null/{error} si inconnu.
+// Reference lookups for the agent and the UI (typing, stats, moves, abilities, items,
+// type effectiveness). All in ENGLISH (the AI works in EN). null/{error} if unknown.
 import { db } from "./db";
 import { canon, inChampions, display } from "./names";
 import type { BaseStats, Weakness } from "@poketeam/types";
@@ -12,7 +12,7 @@ interface PokemonRow {
   resistances: string | null;
 }
 
-// Outil agent : typage, stats, talents, faiblesses — tout en ANGLAIS (l'IA travaille en EN).
+// Agent tool: typing, stats, abilities, weaknesses — all in ENGLISH (the AI works in EN).
 export function getPokemon(name: string) {
   const en = canon("pokemon", name);
   const p = en
@@ -26,7 +26,7 @@ export function getPokemon(name: string) {
   const res = JSON.parse(p.resistances ?? "[]") as Weakness[];
   return {
     name: p.en,
-    champions: inChampions("pokemon", p.en), // dispo dans Pokémon Champions ?
+    champions: inChampions("pokemon", p.en), // available in Pokémon Champions?
     types: JSON.parse(p.types ?? "[]") as string[],
     abilities: JSON.parse(p.abilities ?? "[]") as string[],
     base_stats: JSON.parse(p.stats ?? "null") as BaseStats | null,
@@ -36,7 +36,7 @@ export function getPokemon(name: string) {
   };
 }
 
-// Efficacité d'un type (offensif + défensif), tout en anglais. null si type inconnu.
+// Effectiveness of a type (offensive + defensive), all in English. null if type unknown.
 const qAtt = db.query<{ t: string; m: number }, [string]>(
   "SELECT defender AS t, multiplier AS m FROM type_chart WHERE attacker=?",
 );
@@ -72,7 +72,7 @@ interface MoveRow {
   effect: string | null;
 }
 
-// Infos riches (pour rendre l'IA plus intelligente) : null si inconnu.
+// Rich info (to make the AI smarter): null if unknown.
 export function getMove(name: string) {
   const en = canon("move", name);
   if (!en) return null;

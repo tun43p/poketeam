@@ -1,4 +1,4 @@
-// Boîtes (slots de Pokémon) : lecture, création/édition, suppression, duplication, renommage.
+// Boxes (Pokémon slots): read, create/edit, delete, duplicate, rename.
 import { getBoxes, saveBox, deleteBox, duplicateBox, renameBox } from "@poketeam/store";
 
 type Req<P> = Request & { params: P };

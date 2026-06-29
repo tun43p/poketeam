@@ -1,4 +1,4 @@
-// Listes de référence pour l'UI (déjà localisées par la couche data).
+// Reference lists for the UI (already localized by the data layer).
 import { pokemonList, getTypes } from "@poketeam/data";
 
 export const pokemonRoutes = {

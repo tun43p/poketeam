@@ -1,5 +1,5 @@
-// Message libre sur une équipe : l'agent répond (prose) OU renvoie une équipe modifiée.
-// On distingue via parseTeam. Pas de session SDK sur disque : on rejoue tout le fil.
+// Free-form message about a team: the agent answers (prose) OR returns a modified team.
+// We distinguish via parseTeam. No SDK session on disk: we replay the whole thread.
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import { tools, ALLOWED_TOOLS } from "./tools";
 import { COACH_SYSTEM } from "./prompts";
@@ -13,7 +13,7 @@ type MsgEvent =
   | { type: "version"; team: Team }
   | { type: "error"; error: string };
 
-// Entrées d'outils que l'on inspecte pour les messages de progression.
+// Tool inputs that we inspect for the progress messages.
 interface ToolInput {
   query?: string;
   url?: string;

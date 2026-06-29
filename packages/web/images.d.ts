@@ -1,4 +1,4 @@
-// Bun bundle les imports d'images en URL. Déclaration pour TypeScript.
+// Bun bundles image imports as URLs. Declaration for TypeScript.
 declare module "*.png" {
   const url: string;
   export default url;

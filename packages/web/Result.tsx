@@ -1,7 +1,7 @@
 import { TYPE_COLORS, type Mon } from "./lib";
 import type { Team, BaseStats, Move } from "@poketeam/types";
 
-// Pastille de type avec couleur + icône (si disponible).
+// Type chip with color + icon (if available).
 function TypeChip({
   type,
   suffix,
@@ -21,7 +21,7 @@ function TypeChip({
   );
 }
 
-// Stats de base (clés Tyradex → libellés FR courts).
+// Base stats (Tyradex keys → short FR labels).
 const STATS: [keyof BaseStats, string][] = [
   ["hp", "PV"],
   ["atk", "Attaque"],
@@ -31,7 +31,7 @@ const STATS: [keyof BaseStats, string][] = [
   ["vit", "Vitesse"],
 ];
 
-// Libellés FR des EV (clés spa/spd/spe, distinctes des stats de base).
+// FR labels for EVs (keys spa/spd/spe, distinct from the base stats).
 const EV_LABELS: Record<string, string> = {
   hp: "PV",
   atk: "Attaque",
@@ -41,7 +41,7 @@ const EV_LABELS: Record<string, string> = {
   spe: "Vitesse",
 };
 
-// Effet (description), traduit en FR au build.
+// Effect (description), translated to FR at build time.
 function Effect({ text }: { text?: string | null }) {
   if (!text) return null;
   return <p className="effect-en">{text}</p>;

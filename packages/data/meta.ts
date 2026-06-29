@@ -1,5 +1,5 @@
-// Méta compétitif Champions : le SEUL accès réseau au runtime (usage temps réel),
-// avec cache disque court. Le cache vit dans .cache/ (relatif au cwd, ignoré par git).
+// Champions competitive meta: the ONLY network access at runtime (real-time usage),
+// with a short disk cache. The cache lives in .cache/ (relative to the cwd, git-ignored).
 import { mkdir } from "node:fs/promises";
 
 interface MetaRow {

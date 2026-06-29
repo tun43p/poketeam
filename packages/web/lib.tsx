@@ -9,7 +9,7 @@ export interface Mon {
 }
 export type Boxes = Record<string, string[]>;
 
-// Évènements ndjson émis par le serveur pendant la génération / le chat.
+// ndjson events emitted by the server during generation / chat.
 export type StreamEvent =
   | { type: "progress"; text: string }
   | { type: "error"; error: string }
@@ -24,7 +24,7 @@ export const norm = (s: string) =>
     .replace(/\p{Diacritic}/gu, "")
     .toLowerCase();
 
-// Distance de Levenshtein (tolérance aux fautes de frappe dans la recherche).
+// Levenshtein distance (tolerance for typos in the search).
 export function levenshtein(a: string, b: string): number {
   const m = a.length,
     n = b.length;
@@ -43,7 +43,7 @@ export function levenshtein(a: string, b: string): number {
   return prev[n];
 }
 
-// Couleurs officielles des types (noms FR de Tyradex) pour les pastilles de faiblesses.
+// Official type colors (FR names from Tyradex) for the weakness chips.
 export const TYPE_COLORS: Record<string, string> = {
   Normal: "#a8a878",
   Feu: "#f08030",
@@ -67,16 +67,16 @@ export const TYPE_COLORS: Record<string, string> = {
 
 export const Pokeball = () => <span className="pokeball" aria-hidden="true" />;
 
-// Export PDF natif : clone le rendu d'une équipe + les feuilles de style dans une
-// fenêtre d'impression. ponytail: window.print() du navigateur, pas de lib PDF.
+// Native PDF export: clones a team's rendering + the stylesheets into a
+// print window. ponytail: the browser's window.print(), no PDF lib.
 export function exportPdf(id: string, title: string) {
   const node = document.getElementById(id);
   if (!node) return;
   const styles = [...document.querySelectorAll("link[rel=stylesheet],style")]
     .map((s) => s.outerHTML)
     .join("");
-  // Garde le rendu web (fond dégradé + overlay CRT) ; print-color-adjust force
-  // l'impression des couleurs, sinon le navigateur blanchit les fonds.
+  // Keep the web rendering (gradient background + CRT overlay); print-color-adjust forces
+  // the colors to print, otherwise the browser whitens the backgrounds.
   const print = `<style>
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     body { min-height: 0 !important; }
@@ -84,8 +84,8 @@ export function exportPdf(id: string, title: string) {
   </style>`;
   const w = window.open("", "_blank", "width=900,height=1200");
   if (!w) return;
-  // document.write reste l'API adaptée à une fenêtre d'impression : elle garantit
-  // l'évènement `load` (attendre le chargement des sprites avant de mesurer la hauteur).
+  // document.write remains the right API for a print window: it guarantees
+  // the `load` event (wait for the sprites to load before measuring the height).
   // eslint-disable-next-line @typescript-eslint/no-deprecated
   w.document.write(
     `<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>${title}</title>${styles}${print}</head>` +
@@ -93,8 +93,8 @@ export function exportPdf(id: string, title: string) {
   );
   w.document.close();
   w.addEventListener("load", () => {
-    // Page sur-mesure : @page = largeur A4 × hauteur réelle du contenu → tout
-    // sur une seule page géante, aucune coupe. px → mm @96dpi.
+    // Custom page: @page = A4 width × actual content height → everything
+    // on a single giant page, no cuts. px → mm @96dpi.
     const wrap = w.document.getElementById("pdfwrap");
     const h = wrap ? Math.ceil(wrap.scrollHeight / 3.7795) : 297;
     const s = w.document.createElement("style");
@@ -105,7 +105,7 @@ export function exportPdf(id: string, title: string) {
   });
 }
 
-// Lit un flux ndjson et passe chaque évènement à onEvent.
+// Reads an ndjson stream and passes each event to onEvent.
 export async function streamNdjson(url: string, body: unknown, onEvent: (ev: StreamEvent) => void) {
   const res = await fetch(url, {
     method: "POST",

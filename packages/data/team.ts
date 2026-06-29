@@ -1,6 +1,6 @@
-// Traduit une équipe stockée (ANGLAIS canonique) vers la langue d'affichage et
-// l'enrichit avec les infos BDD pour les cartes (stats, détails d'attaque, résistances,
-// effets). Ne mute pas l'équipe stockée.
+// Translates a stored team (canonical ENGLISH) into the display language and
+// enriches it with DB info for the cards (stats, move details, resistances,
+// effects). Does not mutate the stored team.
 import { db, type Category } from "./db";
 import { localize, display, localizeProse } from "./names";
 import { getPokemon, getMove, getAbility, getItem, getType } from "./reference";
@@ -12,7 +12,7 @@ const DMG_CLASS_FR: Record<string, string> = {
   status: "Statut",
 };
 
-// Effet (description) traduit en FR au build (table effects). Fallback : l'anglais.
+// Effect (description) translated to FR at build time (effects table). Fallback: English.
 const qEffFr = db.query<{ fr: string | null }, [string]>(
   "SELECT fr FROM effects WHERE en=? LIMIT 1",
 );
@@ -21,11 +21,11 @@ function effectFr(en?: string | null, lang: "fr" | "en" = "fr"): string | null {
   return qEffFr.get(en)?.fr ?? en;
 }
 
-// Traduit une équipe stockée (ANGLAIS canonique) vers la langue d'affichage, au format
-// attendu par l'UI (name_fr/name_en + champs localisés), ET l'enrichit avec les infos
-// BDD pour les cartes : stats de base, détails d'attaque, résistances/immunités, effets
-// (les effets restent en anglais tant qu'il n'y a pas de cache de traduction).
-// La prose (role/note/strategy) est laissée telle quelle. Ne mute pas l'équipe stockée.
+// Translates a stored team (canonical ENGLISH) into the display language, in the format
+// expected by the UI (name_fr/name_en + localized fields), AND enriches it with DB
+// info for the cards: base stats, move details, resistances/immunities, effects
+// (effects stay in English as long as there is no translation cache).
+// Prose (role/note/strategy) is left as is. Does not mutate the stored team.
 export function localizeTeam(team: Team, lang: "fr" | "en" = "fr"): Team {
   const L = (cat: Category, v?: string | null) => localize(cat, v, lang);
   const T = (t?: string | null) => display("type", t, lang);
@@ -52,7 +52,7 @@ export function localizeTeam(team: Team, lang: "fr" | "en" = "fr"): Team {
         moves: (m.moves ?? []).map((mv) => {
           if (typeof mv === "string") return mv;
           const info = getMove(mv.name);
-          // Types contre lesquels l'attaque tape ×2 (seulement les attaques de dégâts).
+          // Types the move hits for ×2 (damage moves only).
           const isDamage = info && info.damage_class !== "status";
           const strong = isDamage
             ? (getType(mv.type ?? "")?.attacking.super_effective ?? []).map((t) => T(t) ?? t)

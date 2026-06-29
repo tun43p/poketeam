@@ -1,6 +1,6 @@
-// Le modèle n'emballe pas toujours le JSON de façon identique. On tente, dans l'ordre :
-// bloc ```json, bloc ``` simple, puis du premier "{" au dernier "}". On ne renvoie un
-// résultat que s'il contient bien une clé `team` (sinon null).
+// The model does not always wrap the JSON the same way. We try, in order:
+// ```json block, plain ``` block, then from the first "{" to the last "}". We only
+// return a result if it actually contains a `team` key (otherwise null).
 import type { Team } from "@poketeam/types";
 
 export function parseTeam(raw: string): Team | null {

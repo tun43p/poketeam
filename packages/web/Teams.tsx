@@ -3,8 +3,8 @@ import { exportPdf, streamNdjson, type Mon } from "./lib";
 import { Result } from "./Result";
 import type { StoredTeam } from "@poketeam/types";
 
-// Fil unique sous une équipe : l'agent comprend tout seul question vs modification.
-// Chaque modif crée une version restaurable. Tout est persisté côté serveur.
+// Single thread under a team: the agent figures out question vs modification on its own.
+// Each modification creates a restorable version. Everything is persisted server-side.
 function TeamThread({
   index,
   entry,
@@ -104,7 +104,7 @@ function TeamThread({
   );
 }
 
-// ---------- Écran équipes : liste des équipes générées ----------
+// ---------- Teams screen: list of generated teams ----------
 export function TeamsPage({
   byEn,
   typeImg,

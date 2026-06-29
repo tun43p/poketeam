@@ -1,7 +1,7 @@
-// Connexion à la data de référence (poke.db, offline, `bun run build:db`).
-// poke.db vit à la RACINE du projet, résolue relativement au module (import.meta.dir
-// → packages/data, donc ../../), pas au cwd, pour marcher depuis n'importe quel package.
-// Les tables sont en ANGLAIS ; la traduction (dans les deux sens) vit dans names.ts.
+// Connection to the reference data (poke.db, offline, `bun run build:db`).
+// poke.db lives at the project ROOT, resolved relative to the module (import.meta.dir
+// → packages/data, hence ../../), not the cwd, so it works from any package.
+// The tables are in ENGLISH; translation (in both directions) lives in names.ts.
 import { Database } from "bun:sqlite";
 
 export const db = new Database(`${import.meta.dir}/../../poke.db`, { readonly: true });

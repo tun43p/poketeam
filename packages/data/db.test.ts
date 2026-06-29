@@ -1,4 +1,4 @@
-// Garde-fou : poke.db existe et canonicalise n'importe quelle graphie → nom EN.
+// Safeguard: poke.db exists and canonicalizes any spelling → EN name.
 import { expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
 
@@ -50,7 +50,7 @@ test("matrice d'efficacité des types (type_chart)", () => {
   expect(mult("Water", "Fire")).toBe(2);
   expect(mult("Fire", "Water")).toBe(0.5);
   expect(mult("Normal", "Ghost")).toBe(0);
-  expect(mult("Normal", "Normal")).toBe(1); // neutre = absent → fallback 1
+  expect(mult("Normal", "Normal")).toBe(1); // neutral = absent → fallback 1
 });
 
 test("tables de détail sans aucune colonne FR", () => {

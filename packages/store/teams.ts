@@ -1,5 +1,5 @@
-// Équipes générées : sauvegarde, suppression, renommage, versions restaurables et
-// fil de discussion. Tout est stocké en ANGLAIS canonique.
+// Generated teams: save, delete, rename, restorable versions and
+// discussion thread. Everything is stored in canonical ENGLISH.
 import { read, write } from "./read";
 import type { Team } from "@poketeam/types";
 
@@ -22,7 +22,7 @@ export async function deleteTeam(index: number) {
   return s.teams;
 }
 
-// Nouvelle version d'équipe (suite à une modif) + trace dans le fil de discussion.
+// New team version (following an edit) + trace in the discussion thread.
 export async function addVersion(index: number, team: Team, prompt: string, note: string) {
   const s = await read();
   const t = s.teams.at(index);
@@ -39,7 +39,7 @@ export async function addVersion(index: number, team: Team, prompt: string, note
   return s.teams;
 }
 
-// Revenir à une version : la version active devient celle demandée.
+// Revert to a version: the active version becomes the requested one.
 export async function setActiveVersion(index: number, v: number) {
   const s = await read();
   const t = s.teams.at(index);

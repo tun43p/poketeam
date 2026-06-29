@@ -1,4 +1,4 @@
-// Surface publique du package : tout ce que le serveur consomme.
+// Public surface of the package: everything the server consumes.
 export { getBoxes, saveBox, deleteBox, duplicateBox, renameBox } from "./boxes";
 export {
   getTeams,

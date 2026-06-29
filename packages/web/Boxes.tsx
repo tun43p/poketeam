@@ -5,7 +5,7 @@ import wp2 from "./assets/wp2.png";
 import wp3 from "./assets/wp3.png";
 import wp4 from "./assets/wp4.png";
 
-// Vrais papiers peints de boîte (gen3). Chaque boîte garde le sien (hash du nom).
+// Real box wallpapers (gen3). Each box keeps its own (hash of the name).
 const WALLPAPERS = [wp1, wp2, wp3, wp4];
 function wpFor(name: string): string {
   let h = 0;
@@ -13,7 +13,7 @@ function wpFor(name: string): string {
   return WALLPAPERS[h % WALLPAPERS.length] ?? wp1;
 }
 
-// ---------- Écran boîtes : créer / éditer / supprimer ----------
+// ---------- Boxes screen: create / edit / delete ----------
 export function BoxesPage({
   all,
   byEn,
@@ -34,7 +34,7 @@ export function BoxesPage({
     const s = norm(q.trim());
     if (!s) return [];
     const hits = all.filter((m) => norm(m.fr).includes(s) || norm(m.en).includes(s));
-    // Complète par distance de Levenshtein (tolérance aux fautes de frappe).
+    // Complete with Levenshtein distance (tolerance for typos).
     if (hits.length < 8) {
       const seen = new Set(hits.map((m) => m.id));
       const fuzzy = all
@@ -48,8 +48,8 @@ export function BoxesPage({
     return hits.slice(0, 8);
   }, [q, all]);
 
-  // Réinitialise l'index surligné quand la recherche change (ajustement au rendu,
-  // pattern React recommandé plutôt qu'un effet qui appelle setState).
+  // Reset the highlighted index when the search changes (adjustment during render,
+  // recommended React pattern rather than an effect that calls setState).
   const [prevQ, setPrevQ] = useState(q);
   if (q !== prevQ) {
     setPrevQ(q);
@@ -127,7 +127,7 @@ export function BoxesPage({
   const slots = Object.entries(boxes);
   const names = Object.keys(boxes);
 
-  // Navigation ◀ ▶ entre boîtes (charge la précédente / suivante pour édition).
+  // Navigation ◀ ▶ between boxes (load the previous / next one for editing).
   function cycle(dir: number) {
     if (!names.length) return;
     const i = name in boxes ? names.indexOf(name) : dir > 0 ? -1 : 0;

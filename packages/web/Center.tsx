@@ -8,19 +8,19 @@ import playerSheet from "./assets/player.png";
 import nurseSheet from "./assets/nurse.png";
 
 // ---------------------------------------------------------------------------
-// Sprites authentiques (gen3, décompilation pokeemerald) : l'intérieur du
-// Centre Pokémon (FRLG, l'infirmière est déjà dessinée dessus = Claudia) et
-// la planche de marche du dresseur (9 frames de 16×32).
-// Ordre des frames pokeemerald : 0 sud, 1 nord, 2 ouest, 3/4 marche sud,
-// 5/6 marche nord, 7/8 marche ouest.
+// Authentic sprites (gen3, pokeemerald decompilation): the interior of the
+// Pokémon Center (FRLG, the nurse is already drawn on it = Claudia) and
+// the trainer's walking sheet (9 frames of 16×32).
+// pokeemerald frame order: 0 south, 1 north, 2 west, 3/4 walk south,
+// 5/6 walk north, 7/8 walk west.
 // ---------------------------------------------------------------------------
 type Facing = "down" | "up" | "left" | "right";
 const STAND: Record<Facing, number> = { down: 0, up: 1, left: 2, right: 2 };
 const STEP: Record<Facing, number> = { down: 3, up: 5, left: 7, right: 7 };
 
 // ---------------------------------------------------------------------------
-// Boîte de dialogue façon Pokémon : texte qui s'écrit lettre par lettre,
-// flèche ▼ clignotante, puis menu de choix au curseur ▸.
+// Pokémon-style dialogue box: text that writes itself letter by letter,
+// blinking ▼ arrow, then a choice menu with a ▸ cursor.
 // ---------------------------------------------------------------------------
 interface Choice {
   label: string;
@@ -39,12 +39,12 @@ function Dialogue({
   onClose: () => void;
 }) {
   const [page, setPage] = useState(0);
-  const [count, setCount] = useState(0); // nb de caractères révélés
+  const [count, setCount] = useState(0); // number of characters revealed
   const [prevPage, setPrevPage] = useState(0);
   const [cursor, setCursor] = useState(0);
   const full = lines[page] ?? "";
 
-  // Reset du compteur au changement de page (pattern « ajustement au rendu »).
+  // Reset the counter when the page changes ("adjustment during render" pattern).
   if (page !== prevPage) {
     setPrevPage(page);
     setCount(0);
@@ -54,8 +54,8 @@ function Dialogue({
   const done = count >= full.length;
   const lastPage = page >= lines.length - 1;
 
-  // Machine à écrire : l'effet ne fait que programmer le tick suivant
-  // (le setState vit dans le callback async, jamais dans le corps de l'effet).
+  // Typewriter: the effect only schedules the next tick
+  // (the setState lives in the async callback, never in the effect body).
   useEffect(() => {
     if (count >= full.length) return;
     const id = setTimeout(() => {
@@ -70,17 +70,17 @@ function Dialogue({
 
   function advance() {
     if (!done) {
-      setCount(full.length); // 1er clic : finir la ligne d'un coup
+      setCount(full.length); // 1st click: finish the line all at once
       return;
     }
     if (!lastPage) {
-      setPage((p) => Math.min(p + 1, lines.length - 1)); // clamp : un double-clic ne dépasse pas
+      setPage((p) => Math.min(p + 1, lines.length - 1)); // clamp: a double-click does not overshoot
       return;
     }
     if (!choices || choices.length === 0) onClose();
   }
 
-  // Clavier : ↑/↓ pour le menu, Entrée/Espace pour valider/avancer.
+  // Keyboard: ↑/↓ for the menu, Enter/Space to confirm/advance.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (showChoices) {
@@ -134,8 +134,8 @@ function Dialogue({
 }
 
 // ---------------------------------------------------------------------------
-// Panneau plein écran : un « écran de jeu » qui recouvre la scène quand tu
-// utilises le PC ou que tu discutes avec Claudia. Réutilise les pages existantes.
+// Full-screen panel: a "game screen" that covers the scene when you
+// use the PC or talk with Claudia. Reuses the existing pages.
 // ---------------------------------------------------------------------------
 function Panel({
   title,
@@ -159,8 +159,8 @@ function Panel({
   );
 }
 
-// Positions (en %) : point d'arrêt du dresseur devant chaque station, et
-// position de l'étiquette cliquable au-dessus de la station dans l'image FRLG.
+// Positions (in %): the trainer's stopping point in front of each station, and
+// the position of the clickable label above the station in the FRLG image.
 const SPOTS = {
   home: { x: 49, y: 80 },
   claudia: { x: 50, y: 44 },
@@ -170,7 +170,7 @@ const LABELS = {
   claudia: { x: 50, y: 11 },
   pc: { x: 72, y: 13 },
 };
-const NURSE = { x: 50, y: 25 }; // position du sprite Claudia derrière le comptoir
+const NURSE = { x: 50, y: 25 }; // position of the Claudia sprite behind the counter
 
 type View = "scene" | "talk" | "create" | "consult" | "pc";
 
@@ -194,7 +194,7 @@ export function Center({
   const [step, setStep] = useState(false);
   const after = useRef<() => void>(() => undefined);
 
-  // Marche jusqu'à une station, puis exécute l'action (ouvre dialogue / écran).
+  // Walk to a station, then run the action (open dialogue / screen).
   function walkTo(spot: { x: number; y: number }, then: () => void) {
     if (walking) return;
     const dx = spot.x - pos.x;
@@ -213,7 +213,7 @@ export function Center({
     setPos(SPOTS.home);
   }
 
-  // Animation de marche : alterne frame fixe / frame de pas pendant le déplacement.
+  // Walking animation: alternate fixed frame / step frame while moving.
   useEffect(() => {
     if (!walking) return;
     const id = setInterval(() => {
@@ -224,8 +224,8 @@ export function Center({
     };
   }, [walking]);
 
-  // Les pages réutilisées contiennent des liens internes (#/teams, #/boxes) :
-  // on les rebranche sur les panneaux au lieu de l'ancienne navigation par hash.
+  // The reused pages contain internal links (#/teams, #/boxes):
+  // we rewire them to the panels instead of the old hash-based navigation.
   useEffect(() => {
     const onHash = () => {
       if (location.hash === "#/teams") setView("consult");
@@ -243,7 +243,7 @@ export function Center({
   return (
     <div className="center-shell">
       <div className={`room ${inScene ? "" : "dim"}`} style={{ backgroundImage: `url(${centerBg})` }}>
-        {/* Claudia (infirmière gen3) derrière le comptoir */}
+        {/* Claudia (gen3 nurse) behind the counter */}
         <div
           className="npc"
           style={{
@@ -255,7 +255,7 @@ export function Center({
           }}
         />
 
-        {/* Zones cliquables (au-dessus de Claudia et du PC, déjà dessinés) */}
+        {/* Clickable areas (above Claudia and the PC, already drawn) */}
         {inScene && (
           <>
             <button
@@ -283,7 +283,7 @@ export function Center({
           </>
         )}
 
-        {/* Le dresseur (toi) — sprite gen3 animé */}
+        {/* The trainer (you) — animated gen3 sprite */}
         <div
           className={`player ${walking ? "walking" : ""}`}
           style={{
@@ -303,7 +303,7 @@ export function Center({
         />
       </div>
 
-      {/* Dialogue avec Claudia */}
+      {/* Dialogue with Claudia */}
       {view === "talk" && (
         <Dialogue
           speaker="CLAUDIA"

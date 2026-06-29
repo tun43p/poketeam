@@ -1,5 +1,5 @@
-// Équipes : liste, suppression, message libre (question/modif via l'agent), restauration
-// de version, renommage. Tout est localisé en FR à la sortie ; persisté en EN.
+// Teams: list, delete, free message (question/edit via the agent), version restore,
+// rename. Everything is localized to FR on output; persisted in EN.
 import {
   getTeams,
   deleteTeam,
@@ -49,7 +49,7 @@ export const teamsRoutes = {
               message: message.trim(),
             })) {
               if (ev.type === "version") {
-                version = ev.team; // ANGLAIS, à persister
+                version = ev.team; // ENGLISH, to persist
                 controller.enqueue(
                   enc.encode(
                     JSON.stringify({ type: "version", team: localizeTeam(ev.team, LANG) }) + "\n",
@@ -58,7 +58,7 @@ export const teamsRoutes = {
                 continue;
               }
               if (ev.type === "answer") {
-                answer = ev.text; // ANGLAIS-truffé, à persister tel quel
+                answer = ev.text; // English-laden, to persist as-is
                 controller.enqueue(
                   enc.encode(
                     JSON.stringify({ type: "answer", text: localizeProse(ev.text, LANG) }) + "\n",

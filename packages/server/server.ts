@@ -6,9 +6,9 @@ import { teamsRoutes } from "./routes/teams";
 
 const server = Bun.serve({
   port: Number(Bun.env.PORT) || 3000,
-  // hmr: recharge JS/CSS à chaud (sinon le bundler sert un CSS en cache jusqu'au redémarrage).
+  // hmr: hot-reloads JS/CSS (otherwise the bundler serves cached CSS until restart).
   development: Bun.env.NODE_ENV !== "production" ? { hmr: true } : false,
-  idleTimeout: 255, // génération longue : pas de coupure pendant la rédaction finale (max Bun)
+  idleTimeout: 255, // long generation: no cutoff during final writing (Bun max)
   routes: {
     "/": index,
     ...pokemonRoutes,

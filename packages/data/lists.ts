@@ -1,4 +1,4 @@
-// Listes pour l'UI : sélection de Pokémon (FR+EN+sprite+types) et les 18 types.
+// Lists for the UI: Pokémon selection (FR+EN+sprite+types) and the 18 types.
 import { db } from "./db";
 import { display } from "./names";
 import type { PokemonListItem } from "@poketeam/types";
@@ -10,7 +10,7 @@ interface PokemonListRow {
   types: string | null;
 }
 
-// Liste de sélection UI : espèces réelles, nom FR+EN + sprite + types (FR pour l'affichage).
+// UI selection list: real species, FR+EN name + sprite + types (FR for display).
 export function pokemonList(): PokemonListItem[] {
   return db
     .query<PokemonListRow, []>("SELECT dex_id, en, sprite, types FROM pokemon ORDER BY dex_id")
@@ -24,7 +24,7 @@ export function pokemonList(): PokemonListItem[] {
     }));
 }
 
-// Les 18 types (nom FR + icône) pour l'UI.
+// The 18 types (FR name + icon) for the UI.
 export function getTypes(): { name: string; image: string }[] {
   return db
     .query<{ en: string; sprite: string }, []>(

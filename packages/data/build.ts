@@ -1,13 +1,13 @@
-// Construit poke.db : TOUTE la data de référence (offline, commitée).
-// Principe : les tables de détail sont 100% ANGLAIS. La table `lookup` est la SEULE
-// multilingue — elle répartit n'importe quelle graphie (toute langue) → nom EN canonique,
-// et sert aussi à l'affichage (EN → langue cible).
-// Sources : Tyradex (pokédex + types + stats + résistances) et PokéAPI (attaques,
-// talents, objets, natures — noms FR + descriptions). Lancement : `bun run build:db`.
+// Builds poke.db: ALL the reference data (offline, committed).
+// Principle: the detail tables are 100% ENGLISH. The `lookup` table is the ONLY
+// multilingual one — it maps any spelling (any language) → canonical EN name,
+// and also serves for display (EN → target language).
+// Sources: Tyradex (pokédex + types + stats + resistances) and PokéAPI (moves,
+// abilities, items, natures — FR names + descriptions). Run: `bun run build:db`.
 import { Database } from "bun:sqlite";
 
-// ---- Formes des réponses externes (uniquement les champs lus) ----
-type Loc = { name: string }[]; // tableau de noms localisés (PokéAPI)
+// ---- Shapes of external responses (only the fields we read) ----
+type Loc = { name: string }[]; // array of localized names (PokéAPI)
 interface TypeNode {
   en?: Loc;
   fr?: Loc;
@@ -87,8 +87,8 @@ async function gql<T>(query: string): Promise<T> {
   return r.data;
 }
 
-// Clé de recherche : minuscule, sans accent, sans ponctuation (les slugs "solar-beam"
-// se normalisent comme "Solar Beam" → pas besoin de les stocker en plus).
+// Search key: lowercase, no accents, no punctuation (the slugs "solar-beam"
+// normalize like "Solar Beam" → no need to store them separately).
 const norm = (s: string) =>
   s
     .normalize("NFD")
@@ -96,10 +96,10 @@ const norm = (s: string) =>
     .toLowerCase()
     .replace(/[^a-z0-9]/g, "");
 
-// poke.db est écrit à la RACINE du projet (résolu via import.meta.dir → ../.., pas le cwd).
+// poke.db is written at the project ROOT (resolved via import.meta.dir → ../.., not the cwd).
 const db = new Database(`${import.meta.dir}/../../poke.db`, { create: true });
 
-// ---- Schéma : détail en anglais pur, `lookup` = unique table multilingue ----
+// ---- Schema: detail in pure English, `lookup` = sole multilingual table ----
 db.run(`DROP TABLE IF EXISTS lookup`);
 db.run(`CREATE TABLE lookup (category TEXT, lang TEXT, en TEXT, name TEXT, norm TEXT)`);
 db.run(`DROP TABLE IF EXISTS pokemon`);
@@ -119,8 +119,8 @@ db.run(`CREATE TABLE natures (en TEXT PRIMARY KEY, up TEXT, down TEXT)`);
 db.run(`DROP TABLE IF EXISTS types`);
 db.run(`CREATE TABLE types (en TEXT PRIMARY KEY, sprite TEXT)`);
 db.run(`DROP TABLE IF EXISTS type_chart`);
-// Matrice d'efficacité attaquant→défenseur (anglais). On ne stocke que le ≠1 ;
-// l'absence d'une paire = neutre (×1). multiplier ∈ {0, 0.5, 2}.
+// Attacker→defender effectiveness matrix (English). We only store the ≠1 ;
+// a missing pair = neutral (×1). multiplier ∈ {0, 0.5, 2}.
 db.run(
   `CREATE TABLE type_chart (attacker TEXT, defender TEXT, multiplier REAL, PRIMARY KEY (attacker, defender))`,
 );
@@ -128,7 +128,7 @@ db.run(
 const insLookup = db.prepare(
   "INSERT INTO lookup (category, lang, en, name, norm) VALUES (?,?,?,?,?)",
 );
-// Enregistre le nom EN canonique + ses graphies par langue. Une ligne par langue.
+// Records the canonical EN name + its spellings per language. One row per language.
 function names(category: string, en: string, fr?: string | null) {
   insLookup.run(category, "en", en, en, norm(en));
   if (fr) insLookup.run(category, "fr", en, fr, norm(fr));
@@ -142,7 +142,7 @@ const tx = db.transaction((fn: () => void) => {
   fn();
 });
 
-// ---- Types (PokéAPI = EN/FR ; Tyradex = icônes UI) ----
+// ---- Types (PokéAPI = EN/FR ; Tyradex = UI icons) ----
 console.log("Types…");
 const tyTypes = (await fetch("https://tyradex.app/api/v1/types").then((r) => r.json())) as TyType[];
 const spriteByFr = new Map<string, string>(tyTypes.map((t) => [norm(t.name?.fr ?? ""), t.sprites]));
@@ -162,7 +162,7 @@ tx(() => {
   }
 });
 
-// ---- Matrice d'efficacité des types (PokéAPI) ----
+// ---- Type effectiveness matrix (PokéAPI) ----
 console.log("Efficacité des types…");
 const teData = await gql<{
   pokemon_v2_typeefficacy: TypeEff[];
@@ -182,7 +182,7 @@ tx(() => {
   }
 });
 
-// ---- Attaques (PokéAPI) ----
+// ---- Moves (PokéAPI) ----
 console.log("Attaques…");
 const moveData = await gql<{ pokemon_v2_move: MoveNode[] }>(`{ pokemon_v2_move {
   power accuracy pp priority move_effect_chance
@@ -198,7 +198,7 @@ tx(() => {
   for (const m of moveData.pokemon_v2_move) {
     const en = m.en?.[0]?.name;
     if (!en) continue;
-    // PokéAPI laisse un token $effect_chance dans le texte → on le remplace par la valeur réelle.
+    // PokéAPI leaves a $effect_chance token in the text → we replace it with the real value.
     const effect =
       (m.eff?.texts?.[0]?.short_effect ?? null)?.replaceAll(
         "$effect_chance",
@@ -218,7 +218,7 @@ tx(() => {
   }
 });
 
-// ---- Talents (PokéAPI) ----
+// ---- Abilities (PokéAPI) ----
 console.log("Talents…");
 const abData = await gql<{ pokemon_v2_ability: AbilityNode[] }>(`{ pokemon_v2_ability {
   en:pokemon_v2_abilitynames(where:{pokemon_v2_language:{name:{_eq:"en"}}}){name}
@@ -234,7 +234,7 @@ tx(() => {
   }
 });
 
-// ---- Objets (PokéAPI) ----
+// ---- Items (PokéAPI) ----
 console.log("Objets…");
 const itemData = await gql<{ pokemon_v2_item: ItemNode[] }>(`{ pokemon_v2_item {
   cat:pokemon_v2_itemcategory{name}
@@ -268,17 +268,17 @@ tx(() => {
   }
 });
 
-// ---- Traduction FR des effets (machine translation gratuite + cache disque) ----
-// L'effet détaillé n'existe qu'en anglais dans PokéAPI. On le traduit une fois au build
-// (endpoint public Google, sans clé), dédoublonné + caché dans .cache/mt-fr.json (les
-// re-builds sont alors instantanés). Le résultat est figé dans poke.db (offline au runtime).
+// ---- FR translation of effects (free machine translation + disk cache) ----
+// The detailed effect only exists in English in PokéAPI. We translate it once at build time
+// (public Google endpoint, no key), deduplicated + cached in .cache/mt-fr.json (so
+// re-builds are then instant). The result is frozen into poke.db (offline at runtime).
 console.log("Traduction des effets (FR)…");
 const MT_CACHE = ".cache/mt-fr.json";
 let mtCache: Record<string, string> = {};
 try {
   mtCache = (await Bun.file(MT_CACHE).json()) as Record<string, string>;
 } catch {
-  /* best effort : échecs réseau ignorés */
+  /* best effort: network failures ignored */
 }
 
 async function mt(q: string): Promise<string | null> {
@@ -289,10 +289,10 @@ async function mt(q: string): Promise<string | null> {
       const out = r[0].map((s) => s[0] ?? "").join("");
       if (out) return out;
     } catch {
-      /* best effort : échecs réseau ignorés */
+      /* best effort: network failures ignored */
     }
   }
-  return null; // échec → on gardera l'anglais au runtime
+  return null; // failure → we'll keep the English at runtime
 }
 
 const effSet = new Set<string>();
@@ -335,8 +335,8 @@ tx(() => {
 });
 console.log(`  ✓ ${translated}/${effSet.size} effets traduits en BDD`);
 
-// ---- Pokémon (Tyradex) — EN DERNIER : on canonicalise types/talents/résistances
-// FR de Tyradex → EN via la table `lookup` désormais remplie. ----
+// ---- Pokémon (Tyradex) — LAST: we canonicalize Tyradex's FR types/abilities/
+// resistances → EN via the now-populated `lookup` table. ----
 console.log("Pokémon…");
 const dex = (await fetch("https://tyradex.app/api/v1/pokemon").then((r) => r.json())) as DexMon[];
 const insPoke = db.prepare(
@@ -364,12 +364,12 @@ tx(() => {
   }
 });
 
-// ---- Disponibilité Pokémon Champions (championsbattledata.com) ----
-// poke.db contient TOUT le national dex ; Champions n'en est qu'un sous-ensemble.
-// On stocke ce qui est LÉGAL dans Champions (par norm) → l'agent peut filtrer.
-// Source unique : l'index donne pokémon + attaques apprenables + talents ; les objets
-// ne sont QUE dans l'usage par Pokémon (held_item top 10), qu'on agrège (~141/148).
-// Natures et types : tous légaux → non stockés (inChampions les renvoie true).
+// ---- Pokémon Champions availability (championsbattledata.com) ----
+// poke.db contains the WHOLE national dex; Champions is only a subset of it.
+// We store what is LEGAL in Champions (by norm) → the agent can filter.
+// Single source: the index gives pokémon + learnable moves + abilities; items
+// are ONLY in the per-Pokémon usage (held_item top 10), which we aggregate (~141/148).
+// Natures and types: all legal → not stored (inChampions returns true for them).
 console.log("Pokémon Champions (disponibilité)…");
 const CUA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36";
 const cfetch = <T>(u: string) =>
@@ -396,7 +396,7 @@ tx(() => {
   }
 });
 
-// Objets : agrège held_item sur chaque Pokémon × {Doubles, Singles} (pool de 16).
+// Items: aggregates held_item over each Pokémon × {Doubles, Singles} (pool of 16).
 const jobs: [string, string][] = [];
 for (const n of champNames) for (const fmt of ["Doubles", "Singles"]) jobs.push([n, fmt]);
 let ci = 0;
@@ -411,7 +411,7 @@ await Promise.all(
         );
         for (const r of d.rows ?? []) if (r.category === "held_item") items.push(r.name);
       } catch {
-        /* best effort : échecs réseau ignorés */
+        /* best effort: network failures ignored */
       }
     }
   }),
@@ -420,7 +420,7 @@ tx(() => {
   for (const it of items) champ("item", it);
 });
 
-// Index de recherche (après insertion = plus rapide).
+// Search index (after insertion = faster).
 db.run(`CREATE INDEX idx_lookup_norm ON lookup (category, norm)`);
 db.run(`CREATE INDEX idx_lookup_en ON lookup (category, lang, en)`);
 

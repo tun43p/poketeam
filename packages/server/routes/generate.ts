@@ -1,5 +1,5 @@
-// Génération d'équipe en flux ndjson. L'équipe arrive en ANGLAIS ; on la persiste telle
-// quelle (sauf affinage, qui ne fait que ré-afficher), puis on l'envoie localisée à l'UI.
+// Team generation as an ndjson stream. The team arrives in ENGLISH; we persist it as-is
+// (except refinement, which only re-displays), then send it localized to the UI.
 import { generateTeamStream } from "@poketeam/agent";
 import { saveTeam } from "@poketeam/store";
 import { localizeTeam } from "@poketeam/data";
@@ -32,8 +32,8 @@ export const generateRoutes = {
               refine: body.refine,
             })) {
               if (ev.type === "done") {
-                // L'équipe arrive en ANGLAIS. On la persiste telle quelle (sauf affinage,
-                // qui ne fait que ré-afficher), puis on l'envoie localisée à l'UI.
+                // The team arrives in ENGLISH. We persist it as-is (except refinement,
+                // which only re-displays), then send it localized to the UI.
                 if (!body.refine) {
                   await saveTeam({ format, prompt: body.prompt ?? "", team: ev.team });
                 }

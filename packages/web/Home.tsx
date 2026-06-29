@@ -4,7 +4,7 @@ import { exportPdf } from "./lib";
 import { Result } from "./Result";
 import type { Team } from "@poketeam/types";
 
-// Barre « affiner » : re-prompt une équipe existante pour y appliquer des modifications.
+// "Refine" bar: re-prompt an existing team to apply changes to it.
 function RefineBar({
   pool,
   format,
@@ -67,7 +67,7 @@ function RefineBar({
   );
 }
 
-// ---------- Accueil : choisir une boîte + prompt + générer ----------
+// ---------- Home: choose a box + prompt + generate ----------
 export function Home({
   byEn,
   boxes,
@@ -103,7 +103,7 @@ export function Home({
             setSteps((s) => [...s, t]);
           },
           onError: setError,
-          // Le serveur persiste l'équipe (en anglais) avant d'émettre "done".
+          // The server persists the team (in English) before emitting "done".
           onDone: (team) => {
             setResult({ team });
             setSaved(true);
