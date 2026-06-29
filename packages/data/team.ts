@@ -1,8 +1,8 @@
 // Traduit une équipe stockée (ANGLAIS canonique) vers la langue d'affichage et
 // l'enrichit avec les infos BDD pour les cartes (stats, détails d'attaque, résistances,
 // effets). Ne mute pas l'équipe stockée.
-import { db } from "./db";
-import { localize, display, localizeProse, type Category } from "./names";
+import { db, type Category } from "./db";
+import { localize, display, localizeProse } from "./names";
 import { getPokemon, getMove, getAbility, getItem, getType } from "./reference";
 
 const DMG_CLASS_FR: Record<string, string> = { physical: "Physique", special: "Spéciale", status: "Statut" };

@@ -4,7 +4,7 @@
 // Surchargé par STORE_FILE pour les tests, afin de ne JAMAIS toucher le vrai store.json.
 import { migrate } from "./migrate";
 
-const FILE = process.env.STORE_FILE || "store.json";
+const FILE = Bun.env.STORE_FILE || "store.json";
 
 export type Store = {
   boxes: Record<string, string[]>; // nom du slot -> noms EN

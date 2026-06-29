@@ -5,10 +5,10 @@ import { boxesRoutes } from "./routes/boxes";
 import { teamsRoutes } from "./routes/teams";
 
 const server = Bun.serve({
-  port: Number(process.env.PORT) || 3000,
+  port: Number(Bun.env.PORT) || 3000,
   // hmr: recharge JS/CSS à chaud (sinon le bundler sert un CSS en cache jusqu'au redémarrage).
   development:
-    process.env.NODE_ENV !== "production" ? { hmr: true } : false,
+    Bun.env.NODE_ENV !== "production" ? { hmr: true } : false,
   idleTimeout: 255, // génération longue : pas de coupure pendant la rédaction finale (max Bun)
   routes: {
     "/": index,
