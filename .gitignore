@@ -37,3 +37,7 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 *~
 *.bak
 *.old
+
+# User data (local single-user store)
+store.json
+store.json.bak-*
