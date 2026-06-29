@@ -9,7 +9,8 @@ export default tseslint.config(
     ignores: ["node_modules/**", ".old/**", "**/poke.db", ".cache/**", "**/*.d.ts"],
   },
 
-  // Base + strict, type-aware rules for the whole TS codebase.
+  // Full strictness: every strict + stylistic type-aware rule, nothing pre-disabled.
+  // Disable individual rules below only when they prove genuinely painful.
   js.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
@@ -20,64 +21,24 @@ export default tseslint.config(
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
-      globals: { ...globals.node, Bun: "readonly" },
+      globals: { ...globals.node, ...globals.browser, Bun: "readonly" },
     },
     rules: {
-      // TypeScript already resolves identifiers; no-undef double-flags Bun/globals.
+      // Not a relaxation: TypeScript already catches undefined identifiers, and
+      // no-undef (which is type-blind) only adds false positives for globals like
+      // Response/ReadableStream/Bun. typescript-eslint recommends turning it off.
       "no-undef": "off",
-      // Best-effort fetches/parses in the build script swallow failures on purpose.
-      "no-empty": ["error", { allowEmptyCatch: true }],
     },
   },
 
-  // The agent/store/team JSON crosses an LLM boundary and is intentionally `any`.
-  // Relax the rules that fight that design instead of scattering disables inline.
-  {
-    rules: {
-      "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-unsafe-assignment": "off",
-      "@typescript-eslint/no-unsafe-member-access": "off",
-      "@typescript-eslint/no-unsafe-call": "off",
-      "@typescript-eslint/no-unsafe-argument": "off",
-      "@typescript-eslint/no-unsafe-return": "off",
-
-      // Purely stylistic — turned off so the linter stays high-signal:
-      "@typescript-eslint/restrict-template-expressions": "off", // `${number}` in strings is fine
-      "@typescript-eslint/no-non-null-assertion": "off", // `!` is used deliberately
-      "@typescript-eslint/consistent-type-definitions": "off", // type vs interface, no preference
-      "@typescript-eslint/array-type": "off", // T[] vs Array<T>, no preference
-      "@typescript-eslint/no-dynamic-delete": "off", // `delete map[key]` is intentional
-      "@typescript-eslint/require-await": "off", // async route/handler uniformity
-
-      // `||` is intentional and often MORE correct here than `??`
-      // (e.g. `Number(PORT) || 3000` must fall back on 0; `?? ` would not).
-      "@typescript-eslint/prefer-nullish-coalescing": "off",
-
-      // Allow `onClick={() => setX()}` and `forEach(x => doThing(x))`.
-      "@typescript-eslint/no-confusing-void-expression": ["error", { ignoreArrowShorthand: true }],
-
-      // Async event handlers / route handlers are safe; keep the dangerous checks only.
-      "@typescript-eslint/no-misused-promises": ["error", { checksVoidReturn: false }],
-
-      // Visible but non-blocking signal:
-      "@typescript-eslint/no-deprecated": "warn",
-      "@typescript-eslint/no-unnecessary-condition": "warn",
-    },
-  },
-
-  // React frontend (browser globals + hooks rules).
+  // React frontend: browser globals + hooks rules at recommended strength.
   {
     files: ["packages/web/**/*.{ts,tsx}"],
-    languageOptions: { globals: { ...globals.browser } },
     plugins: { "react-hooks": reactHooks },
-    rules: {
-      ...reactHooks.configs.recommended.rules,
-      // Resetting derived state on a dependency change is acceptable here.
-      "react-hooks/set-state-in-effect": "warn",
-    },
+    rules: { ...reactHooks.configs.recommended.rules },
   },
 
-  // Plain JS config files: no type-aware linting.
+  // Plain JS config files: no type-aware linting (no tsconfig project for them).
   {
     files: ["**/*.{js,mjs,cjs}"],
     extends: [tseslint.configs.disableTypeChecked],
