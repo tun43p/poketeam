@@ -8,12 +8,7 @@
         "@poketeam/agent": "workspace:*",
         "@poketeam/data": "workspace:*",
         "@poketeam/store": "workspace:*",
-      },
-      "devDependencies": {
-        "@types/react": "^19",
-        "@types/react-dom": "^19",
-        "react": "^19",
-        "react-dom": "^19",
+        "@poketeam/web": "workspace:*",
       },
     },
     "packages/agent": {
@@ -34,6 +29,18 @@
       "version": "0.0.0",
       "dependencies": {
         "@poketeam/data": "workspace:*",
+      },
+    },
+    "packages/web": {
+      "name": "@poketeam/web",
+      "version": "0.0.0",
+      "dependencies": {
+        "react": "^19",
+        "react-dom": "^19",
+      },
+      "devDependencies": {
+        "@types/react": "^19",
+        "@types/react-dom": "^19",
       },
     },
   },
@@ -69,6 +76,8 @@
     "@poketeam/data": ["@poketeam/data@workspace:packages/data"],
 
     "@poketeam/store": ["@poketeam/store@workspace:packages/store"],
+
+    "@poketeam/web": ["@poketeam/web@workspace:packages/web"],
 
     "@stablelib/base64": ["@stablelib/base64@1.0.1", "", {}, "sha512-1bnPQqSxSuc3Ii6MhBysoWCg58j97aUjuCSZrGSmDxNqtytIi0k8utUenAwTZN4V5mXXYGsVUI9zeBqy+jBOSQ=="],
 

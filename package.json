@@ -12,12 +12,7 @@
   "dependencies": {
     "@poketeam/agent": "workspace:*",
     "@poketeam/data": "workspace:*",
-    "@poketeam/store": "workspace:*"
-  },
-  "devDependencies": {
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "react": "^19",
-    "react-dom": "^19"
+    "@poketeam/store": "workspace:*",
+    "@poketeam/web": "workspace:*"
   }
 }
