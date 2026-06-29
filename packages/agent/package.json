@@ -1,0 +1,14 @@
+{
+  "name": "@poketeam/agent",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "latest",
+    "@poketeam/data": "workspace:*",
+    "zod": "^3"
+  }
+}

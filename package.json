@@ -10,10 +10,9 @@
     "build:db": "bun packages/data/build.ts"
   },
   "dependencies": {
-    "@anthropic-ai/claude-agent-sdk": "latest",
+    "@poketeam/agent": "workspace:*",
     "@poketeam/data": "workspace:*",
-    "@poketeam/store": "workspace:*",
-    "zod": "^3"
+    "@poketeam/store": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "^19",

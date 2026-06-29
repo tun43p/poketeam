@@ -1,6 +1,6 @@
-// bun test parseTeam.test.ts
+// bun test
 import { expect, test } from "bun:test";
-import { parseTeam } from "./agent";
+import { parseTeam } from "./parse";
 
 const team = { strategy: "s", team: [{ name_en: "Garchomp" }] };
 const J = JSON.stringify(team);
