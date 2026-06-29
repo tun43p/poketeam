@@ -1,31 +1,62 @@
 # PokéTeam
 
-Générateur d'équipes Pokémon Champions (solo / duo) propulsé par le Claude Agent SDK.
+Pokémon Champions team generator (solo / duo) powered by the Claude Agent SDK.
 
-Sélectionne des Pokémon, décris ce que tu veux en texte libre, et l'agent compose une
-équipe : objets, talents, natures, EV à monter, attaques et faiblesses — en s'appuyant
-sur les stats d'usage réelles du méta Champions.
+Pick your Pokémon, describe what you want in plain text, and the agent builds a
+team: items, abilities, natures, EV spreads, moves and weaknesses — grounded in
+real Champions meta usage stats.
 
 ## Stack
 
-- **Bun** — serveur + bundling front (fullstack natif, sans Vite)
-- **React 19** — interface
-- **[@anthropic-ai/claude-agent-sdk](https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk)** — raisonnement de l'agent + outils
-- **[Tyradex](https://tyradex.app)** — pokédex complet FR/EN (types, stats, faiblesses)
-- **[championsbattledata.com](https://championsbattledata.com)** — méta Champions (sets, EV spreads, usage)
+- **Bun** — server + front-end bundling (native fullstack, no Vite)
+- **React 19** — UI
+- **[@anthropic-ai/claude-agent-sdk](https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk)** — agent reasoning + tools
+- **[Tyradex](https://tyradex.app)** — full FR/EN pokédex (types, stats, weaknesses)
+- **[championsbattledata.com](https://championsbattledata.com)** — Champions meta (sets, EV spreads, usage)
 
-## Lancer
+## Requirements
+
+- **[Bun](https://bun.sh)** ≥ 1.3 — runtime, bundler and package manager
+- **[Claude Code](https://claude.com/claude-code)** — the Agent SDK runs through the Claude Code
+  CLI, so it must be installed and authenticated:
+
+  ```bash
+  curl -fsSL https://claude.ai/install.sh | bash   # or: bun install -g @anthropic-ai/claude-code
+  claude login                                      # authenticate once
+  ```
+
+  Alternatively, skip the login and export an API key instead:
+
+  ```bash
+  export ANTHROPIC_API_KEY=sk-ant-...
+  ```
+
+## Run
 
 ```bash
 bun install
 bun run dev        # http://localhost:3000
 ```
 
-Nécessite un accès à l'API Claude (`ANTHROPIC_API_KEY` ou une session Claude Code).
+`dev` runs with hot reload. Use `bun run start` for a plain run.
 
-## Limites (MVP)
+The reference data (`poke.db`) is committed, so there's nothing to fetch. To
+rebuild it from the upstream sources: `bun run build:db`.
 
-- Pas de récupération de la boîte du jeu : aucune API publique côté Pokémon Champions.
-  On sélectionne dans le pokédex complet.
-- Le mapping de noms vers le méta Champions suppose les noms anglais standards
-  (formes/noms spéciaux non garantis).
+## Scripts
+
+| Command             | Description                                                  |
+| ------------------- | ------------------------------------------------------------ |
+| `bun run dev`       | Dev server with hot reload (port 3000, override with `PORT`) |
+| `bun run start`     | Run the server without hot reload                            |
+| `bun run build:db`  | Rebuild `poke.db` from PokéAPI / Tyradex / Champions         |
+| `bun run typecheck` | `tsc --noEmit`                                               |
+| `bun run lint`      | ESLint                                                       |
+| `bun run format`    | Prettier write                                               |
+
+## Limits (MVP)
+
+- No import of your in-game box: Pokémon Champions exposes no public API, so you
+  pick from the full pokédex.
+- Name mapping to the Champions meta assumes standard English names (special
+  names/forms are not guaranteed).
