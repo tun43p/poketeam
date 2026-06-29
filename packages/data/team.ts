@@ -3,6 +3,7 @@
 // effects). Does not mutate the stored team.
 import { db, type Category } from "./db";
 import { localize, display, localizeProse } from "./names";
+import { LANG } from "./lang";
 import { getPokemon, getMove, getAbility, getItem, getType } from "./reference";
 import type { Team } from "@poketeam/types";
 
@@ -11,12 +12,14 @@ const DMG_CLASS_FR: Record<string, string> = {
   special: "Spéciale",
   status: "Statut",
 };
+const damageClass = (cls: string, lang: "fr" | "en") =>
+  lang === "en" ? cls.charAt(0).toUpperCase() + cls.slice(1) : (DMG_CLASS_FR[cls] ?? cls);
 
 // Effect (description) translated to FR at build time (effects table). Fallback: English.
 const qEffFr = db.query<{ fr: string | null }, [string]>(
   "SELECT fr FROM effects WHERE en=? LIMIT 1",
 );
-function effectFr(en?: string | null, lang: "fr" | "en" = "fr"): string | null {
+function effectFr(en?: string | null, lang: "fr" | "en" = LANG): string | null {
   if (!en || lang === "en") return en ?? null;
   return qEffFr.get(en)?.fr ?? en;
 }
@@ -26,7 +29,7 @@ function effectFr(en?: string | null, lang: "fr" | "en" = "fr"): string | null {
 // info for the cards: base stats, move details, resistances/immunities, effects
 // (effects stay in English as long as there is no translation cache).
 // Prose (role/note/strategy) is left as is. Does not mutate the stored team.
-export function localizeTeam(team: Team, lang: "fr" | "en" = "fr"): Team {
+export function localizeTeam(team: Team, lang: "fr" | "en" = LANG): Team {
   const L = (cat: Category, v?: string | null) => localize(cat, v, lang);
   const T = (t?: string | null) => display("type", t, lang);
   return {
@@ -63,7 +66,7 @@ export function localizeTeam(team: Team, lang: "fr" | "en" = "fr"): Team {
             power: info?.power ?? null,
             accuracy: info?.accuracy ?? null,
             priority: info?.priority ?? 0,
-            category: info ? (DMG_CLASS_FR[info.damage_class] ?? info.damage_class) : null,
+            category: info ? damageClass(info.damage_class, lang) : null,
             effect: effectFr(info?.effect, lang),
             strong_against: strong,
           };

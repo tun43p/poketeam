@@ -1,10 +1,12 @@
-// Data is stored in English; we translate it for display on output.
-// ponytail: language hardcoded to "fr" for now — Phase 5 will read it from the store.
-import { localizeTeam, localizeProse } from "@poketeam/data";
+// Data is stored in English; we localize it for display on output, in the language
+// chosen on first launch (data layer's process-wide LANG, set at boot from the store).
+import { localizeTeam, localizeProse, LANG } from "@poketeam/data";
 import type { StoredTeam } from "@poketeam/types";
 
-export const LANG = "fr";
+export { LANG };
 export const enc = new TextEncoder();
+// Pick the right string for the current language (server-side user-facing strings).
+export const t = (fr: string, en: string) => (LANG === "en" ? en : fr);
 
 export const localizeEntry = (e: StoredTeam): StoredTeam => ({
   ...e,

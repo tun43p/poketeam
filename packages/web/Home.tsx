@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { streamGenerate, type Boxes, type Mon } from "./lib";
 import { exportPdf } from "./lib";
+import { t } from "./i18n";
 import { Result } from "./Result";
 import type { Team } from "@poketeam/types";
 
@@ -50,7 +51,10 @@ function RefineBar({
   return (
     <div className="refine">
       <textarea
-        placeholder="Affiner : « remplace le mur par un sweeper », « plus de résistance au Feu », « change la nature de… »"
+        placeholder={t(
+          "Affiner : « remplace le mur par un sweeper », « plus de résistance au Feu », « change la nature de… »",
+          "Refine: “swap the wall for a sweeper”, “more Fire resistance”, “change the nature of…”",
+        )}
         value={prompt}
         onChange={(e) => {
           setPrompt(e.target.value);
@@ -59,7 +63,9 @@ function RefineBar({
         disabled={loading}
       />
       <button className="generate" onClick={() => void run()} disabled={loading || !prompt.trim()}>
-        {loading ? "Affinage en cours…" : "✨ Affiner l'équipe"}
+        {loading
+          ? t("Affinage en cours…", "Refining…")
+          : t("✨ Affiner l'équipe", "✨ Refine the team")}
       </button>
       {loading && steps.length > 0 && <p className="current">🧠 {steps[steps.length - 1]}</p>}
       {error && <p className="error">{error}</p>}
@@ -119,7 +125,7 @@ export function Home({
 
   return (
     <>
-      <h2>Générer une équipe</h2>
+      <h2>{t("Générer une équipe", "Generate a team")}</h2>
       <div className="formats">
         {(["Doubles", "Singles"] as const).map((f) => (
           <button
@@ -129,15 +135,16 @@ export function Home({
               setFormat(f);
             }}
           >
-            {f === "Doubles" ? "Duo (Double)" : "Solo (Simple)"}
+            {f === "Doubles" ? t("Duo (Double)", "Doubles") : t("Solo (Simple)", "Singles")}
           </button>
         ))}
       </div>
 
-      <label className="field-label">Boîte</label>
+      <label className="field-label">{t("Boîte", "Box")}</label>
       {slots.length === 0 ? (
         <p className="muted">
-          Aucune boîte. <a href="#/boxes">Crée ta première boîte →</a>
+          {t("Aucune boîte.", "No box yet.")}{" "}
+          <a href="#/boxes">{t("Crée ta première boîte →", "Create your first box →")}</a>
         </p>
       ) : (
         <div className="slots">
@@ -169,7 +176,10 @@ export function Home({
       )}
 
       <textarea
-        placeholder="Décris ce que tu veux : « team plutôt défensive, autour du Trick Room… »"
+        placeholder={t(
+          "Décris ce que tu veux : « team plutôt défensive, autour du Trick Room… »",
+          "Describe what you want: “a rather defensive team built around Trick Room…”",
+        )}
         value={prompt}
         onChange={(e) => {
           setPrompt(e.target.value);
@@ -182,7 +192,12 @@ export function Home({
         onClick={() => void generate()}
         disabled={loading || !pool.length}
       >
-        {loading ? "Génération en cours…" : `Composer la meilleure team (depuis ${pool.length})`}
+        {loading
+          ? t("Génération en cours…", "Generating…")
+          : t(
+              `Composer la meilleure team (depuis ${pool.length})`,
+              `Build the best team (from ${pool.length})`,
+            )}
       </button>
 
       {loading && steps.length > 0 && (
@@ -200,16 +215,20 @@ export function Home({
       {result && (
         <>
           <div className="resultbar">
-            <span className="muted">{saved ? "✓ Sauvegardée automatiquement" : "Sauvegarde…"}</span>
+            <span className="muted">
+              {saved
+                ? t("✓ Sauvegardée automatiquement", "✓ Saved automatically")
+                : t("Sauvegarde…", "Saving…")}
+            </span>
             <a href="#/teams" className="muted">
-              voir Mes équipes →
+              {t("voir Mes équipes →", "see My teams →")}
             </a>
             <button
               onClick={() => {
-                exportPdf("pdf-home", "Mon équipe PokéTeam");
+                exportPdf("pdf-home", t("Mon équipe PokéTeam", "My PokéTeam"));
               }}
             >
-              📄 Export PDF
+              {t("📄 Export PDF", "📄 Export PDF")}
             </button>
           </div>
           <div id="pdf-home">

@@ -1,4 +1,5 @@
 import type { Team, StoredTeam } from "@poketeam/types";
+import { lang } from "./i18n";
 
 export interface Mon {
   id: number;
@@ -43,26 +44,42 @@ export function levenshtein(a: string, b: string): number {
   return prev[n];
 }
 
-// Official type colors (FR names from Tyradex) for the weakness chips.
+// Official type colors, keyed by BOTH the FR (Tyradex) and EN type names, since the
+// chips display whichever language is active.
 export const TYPE_COLORS: Record<string, string> = {
   Normal: "#a8a878",
   Feu: "#f08030",
+  Fire: "#f08030",
   Eau: "#6890f0",
+  Water: "#6890f0",
   Plante: "#78c850",
+  Grass: "#78c850",
   Électrik: "#f8d030",
+  Electric: "#f8d030",
   Glace: "#98d8d8",
+  Ice: "#98d8d8",
   Combat: "#c03028",
+  Fighting: "#c03028",
   Poison: "#a040a0",
   Sol: "#e0c068",
+  Ground: "#e0c068",
   Vol: "#a890f0",
+  Flying: "#a890f0",
   Psy: "#f85888",
+  Psychic: "#f85888",
   Insecte: "#a8b820",
+  Bug: "#a8b820",
   Roche: "#b8a038",
+  Rock: "#b8a038",
   Spectre: "#705898",
+  Ghost: "#705898",
   Dragon: "#7038f8",
   Ténèbres: "#705848",
+  Dark: "#705848",
   Acier: "#b8b8d0",
+  Steel: "#b8b8d0",
   Fée: "#ee99ac",
+  Fairy: "#ee99ac",
 };
 
 export const Pokeball = () => <span className="pokeball" aria-hidden="true" />;
@@ -88,7 +105,7 @@ export function exportPdf(id: string, title: string) {
   // the `load` event (wait for the sprites to load before measuring the height).
   // eslint-disable-next-line @typescript-eslint/no-deprecated
   w.document.write(
-    `<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>${title}</title>${styles}${print}</head>` +
+    `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><title>${title}</title>${styles}${print}</head>` +
       `<body><div id="pdfwrap">${node.outerHTML}</div></body></html>`,
   );
   w.document.close();

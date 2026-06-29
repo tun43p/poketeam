@@ -1,4 +1,5 @@
 // Public surface of the package: everything that store/agent/server consume.
+export { LANG, setLang } from "./lang";
 export { canon, inChampions, display, localize, localizeProse } from "./names";
 export { getPokemon, getMove, getAbility, getItem, getType } from "./reference";
 export { pokemonList, getTypes } from "./lists";

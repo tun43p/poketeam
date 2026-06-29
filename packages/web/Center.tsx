@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { Boxes, Mon } from "./lib";
+import { t, lang } from "./i18n";
 import { Home } from "./Home";
 import { BoxesPage } from "./Boxes";
 import { TeamsPage } from "./Teams";
@@ -150,7 +151,7 @@ function Panel({
     <div className="panel">
       <div className="panel-bar">
         <button className="panel-back" onClick={onBack}>
-          ◀ Quitter
+          ◀ {t("Quitter", "Leave")}
         </button>
         <span className="panel-title">{title}</span>
       </div>
@@ -188,6 +189,7 @@ export function Center({
   typeImg: Map<string, string>;
 }) {
   const [view, setView] = useState<View>("scene");
+  const [langLock, setLangLock] = useState(false); // alert: language can't be changed
   const [pos, setPos] = useState(SPOTS.home);
   const [walking, setWalking] = useState(false);
   const [facing, setFacing] = useState<Facing>("down");
@@ -242,7 +244,35 @@ export function Center({
 
   return (
     <div className="center-shell">
-      <div className={`room ${inScene ? "" : "dim"}`} style={{ backgroundImage: `url(${centerBg})` }}>
+      {/* Language switch: shown in the scene only (panels have their own top bar),
+          but LOCKED — clicking it explains it can't change. */}
+      {inScene && (
+        <button
+          className="lang-badge"
+          onClick={() => {
+            setLangLock(true);
+          }}
+        >
+          {lang === "en" ? "🇬🇧 EN" : "🇫🇷 FR"} 🔒
+        </button>
+      )}
+      {langLock && (
+        <Dialogue
+          lines={[
+            t(
+              "La langue est verrouillée et ne peut plus être changée.",
+              "The language is locked and can no longer be changed.",
+            ),
+          ]}
+          onClose={() => {
+            setLangLock(false);
+          }}
+        />
+      )}
+      <div
+        className={`room ${inScene ? "" : "dim"}`}
+        style={{ backgroundImage: `url(${centerBg})` }}
+      >
         {/* Claudia (gen3 nurse) behind the counter */}
         <div
           className="npc"
@@ -307,38 +337,41 @@ export function Center({
       {view === "talk" && (
         <Dialogue
           speaker="CLAUDIA"
-          lines={["Bienvenue au Centre Pokémon !", "Que puis-je faire pour toi aujourd'hui ?"]}
+          lines={[
+            t("Bienvenue au Centre Pokémon !", "Welcome to the Pokémon Center!"),
+            t("Que puis-je faire pour toi aujourd'hui ?", "What can I do for you today?"),
+          ]}
           choices={[
             {
-              label: "Créer une nouvelle équipe",
+              label: t("Créer une nouvelle équipe", "Create a new team"),
               onSelect: () => {
                 setView("create");
               },
             },
             {
-              label: "Consulter une équipe",
+              label: t("Consulter une équipe", "View a team"),
               onSelect: () => {
                 setView("consult");
               },
             },
-            { label: "Rien, merci", onSelect: backToScene },
+            { label: t("Rien, merci", "Nothing, thanks"), onSelect: backToScene },
           ]}
           onClose={backToScene}
         />
       )}
 
       {view === "create" && (
-        <Panel title="Claudia — Nouvelle équipe" onBack={backToScene}>
+        <Panel title={t("Claudia — Nouvelle équipe", "Claudia — New team")} onBack={backToScene}>
           <Home byEn={byEn} boxes={boxes} typeImg={typeImg} />
         </Panel>
       )}
       {view === "consult" && (
-        <Panel title="Claudia — Tes équipes" onBack={backToScene}>
+        <Panel title={t("Claudia — Tes équipes", "Claudia — Your teams")} onBack={backToScene}>
           <TeamsPage byEn={byEn} typeImg={typeImg} />
         </Panel>
       )}
       {view === "pc" && (
-        <Panel title="PC — Boîtes de stockage" onBack={backToScene}>
+        <Panel title={t("PC — Boîtes de stockage", "PC — Storage boxes")} onBack={backToScene}>
           <BoxesPage all={all} byEn={byEn} boxes={boxes} setBoxes={setBoxes} />
         </Panel>
       )}

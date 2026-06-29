@@ -1,4 +1,5 @@
 import { TYPE_COLORS, type Mon } from "./lib";
+import { t } from "./i18n";
 import type { Team, BaseStats, Move } from "@poketeam/types";
 
 // Type chip with color + icon (if available).
@@ -21,24 +22,24 @@ function TypeChip({
   );
 }
 
-// Base stats (Tyradex keys → short FR labels).
+// Base stats (Tyradex keys → short labels, in the chosen language).
 const STATS: [keyof BaseStats, string][] = [
-  ["hp", "PV"],
-  ["atk", "Attaque"],
-  ["def", "Défense"],
-  ["spe_atk", "Atq. Spé"],
-  ["spe_def", "Déf. Spé"],
-  ["vit", "Vitesse"],
+  ["hp", t("PV", "HP")],
+  ["atk", t("Attaque", "Attack")],
+  ["def", t("Défense", "Defense")],
+  ["spe_atk", t("Atq. Spé", "Sp. Atk")],
+  ["spe_def", t("Déf. Spé", "Sp. Def")],
+  ["vit", t("Vitesse", "Speed")],
 ];
 
-// FR labels for EVs (keys spa/spd/spe, distinct from the base stats).
+// Labels for EVs (keys spa/spd/spe, distinct from the base stats).
 const EV_LABELS: Record<string, string> = {
-  hp: "PV",
-  atk: "Attaque",
-  def: "Défense",
-  spa: "Atq. Spé",
-  spd: "Déf. Spé",
-  spe: "Vitesse",
+  hp: t("PV", "HP"),
+  atk: t("Attaque", "Attack"),
+  def: t("Défense", "Defense"),
+  spa: t("Atq. Spé", "Sp. Atk"),
+  spd: t("Déf. Spé", "Sp. Def"),
+  spe: t("Vitesse", "Speed"),
 };
 
 // Effect (description), translated to FR at build time.
@@ -94,32 +95,32 @@ export function Result({
 
               <dl>
                 <div>
-                  <dt>Objet</dt>
+                  <dt>{t("Objet", "Item")}</dt>
                   <dd>
                     {m.item}
                     {m.item_effect && <Effect text={m.item_effect} />}
                   </dd>
                 </div>
                 <div>
-                  <dt>Talent</dt>
+                  <dt>{t("Talent", "Ability")}</dt>
                   <dd>
                     {m.ability}
                     {m.ability_effect && <Effect text={m.ability_effect} />}
                   </dd>
                 </div>
                 <div>
-                  <dt>Nature</dt>
+                  <dt>{t("Nature", "Nature")}</dt>
                   <dd>{m.nature}</dd>
                 </div>
                 <div>
-                  <dt>Téra</dt>
+                  <dt>{t("Téra", "Tera")}</dt>
                   <dd>{m.tera_type}</dd>
                 </div>
               </dl>
 
               {m.evs && (
                 <p className="evs">
-                  EV :{" "}
+                  {t("EV :", "EVs:")}{" "}
                   {Object.entries(m.evs)
                     .filter(([, v]) => v > 0)
                     .map(([k, v]) => `${v} ${EV_LABELS[k] ?? k.toUpperCase()}`)
@@ -154,7 +155,7 @@ export function Result({
                         {meta && <span className="move-meta">{meta}</span>}
                         {mv.strong_against && mv.strong_against.length > 0 && (
                           <div className="move-strong">
-                            <span className="ms-label">Fort vs</span>
+                            <span className="ms-label">{t("Fort vs", "Strong vs")}</span>
                             {mv.strong_against.map((t, k) => (
                               <TypeChip key={k} type={t} typeImg={typeImg} />
                             ))}
@@ -169,7 +170,7 @@ export function Result({
 
               {m.weaknesses && m.weaknesses.length > 0 && (
                 <div className="weak">
-                  <span className="weak-label">Faiblesses</span>
+                  <span className="weak-label">{t("Faiblesses", "Weaknesses")}</span>
                   {m.weaknesses.map((w, k) => (
                     <TypeChip
                       key={k}
@@ -182,7 +183,7 @@ export function Result({
               )}
               {m.resistances && m.resistances.length > 0 && (
                 <div className="weak">
-                  <span className="weak-label">Résiste</span>
+                  <span className="weak-label">{t("Résiste", "Resists")}</span>
                   {m.resistances.map((w, k) => (
                     <TypeChip
                       key={k}
@@ -195,7 +196,7 @@ export function Result({
               )}
               {m.immunities && m.immunities.length > 0 && (
                 <div className="weak">
-                  <span className="weak-label">Immunité</span>
+                  <span className="weak-label">{t("Immunité", "Immune")}</span>
                   {m.immunities.map((t, k) => (
                     <TypeChip key={k} type={t} typeImg={typeImg} />
                   ))}

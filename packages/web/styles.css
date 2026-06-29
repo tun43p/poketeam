@@ -1413,3 +1413,67 @@ details summary .meta {
   margin: 1rem var(--b) 0;
   color: var(--muted);
 }
+
+/* ===========================================================================
+   LANGUAGE — first-launch picker (chosen ONCE, then locked) + the locked badge.
+   =========================================================================== */
+.lang-picker {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  text-align: center;
+  padding: 2rem;
+  background: radial-gradient(circle at 50% 40%, #3a3340, #14121a 80%);
+  color: var(--panel);
+  font-family: var(--body);
+}
+.lang-picker h1 {
+  font-family: var(--pix);
+  color: var(--yellow);
+  font-size: 1.6rem;
+}
+.lang-picker p {
+  font-size: 1.3rem;
+}
+.lang-picker .lang-warn {
+  color: var(--yellow);
+  font-size: 1.1rem;
+}
+.lang-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+.lang-buttons button {
+  font-family: var(--pix);
+  font-size: 0.9rem;
+  padding: 0.8rem 1.2rem;
+  background: var(--panel);
+  color: var(--ink);
+  border: none;
+  box-shadow: var(--frame);
+  cursor: pointer;
+}
+.lang-buttons button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+/* Locked language badge, top-left of the Center scene. */
+.lang-badge {
+  position: fixed;
+  top: 0.8rem;
+  left: 0.8rem;
+  z-index: 50;
+  font-family: var(--pix);
+  font-size: 0.7rem;
+  padding: 0.4rem 0.6rem;
+  background: var(--panel);
+  color: var(--ink);
+  border: none;
+  box-shadow: var(--frame);
+  cursor: pointer;
+}

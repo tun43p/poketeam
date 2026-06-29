@@ -89,6 +89,7 @@ export interface StoredTeam {
 export interface Store {
   boxes: Record<string, string[]>; // slot name -> EN names
   teams: StoredTeam[];
+  lang?: "fr" | "en"; // chosen ONCE on first launch, then locked
 }
 
 // Localized entry for the UI (same format as StoredTeam, prose translated).

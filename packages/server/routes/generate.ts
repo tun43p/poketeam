@@ -3,7 +3,7 @@
 import { generateTeamStream } from "@poketeam/agent";
 import { saveTeam } from "@poketeam/store";
 import { localizeTeam } from "@poketeam/data";
-import { LANG, enc } from "../localize";
+import { LANG, enc, t } from "../localize";
 import type { Team } from "@poketeam/types";
 
 export const generateRoutes = {
@@ -18,7 +18,10 @@ export const generateRoutes = {
 
       const selected = body.selected ?? [];
       if (!selected.length) {
-        return Response.json({ error: "Sélectionne au moins un Pokémon." }, { status: 400 });
+        return Response.json(
+          { error: t("Sélectionne au moins un Pokémon.", "Select at least one Pokémon.") },
+          { status: 400 },
+        );
       }
 
       const format = body.format === "Singles" ? "Singles" : "Doubles";

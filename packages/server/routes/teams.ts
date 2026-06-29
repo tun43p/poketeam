@@ -10,7 +10,7 @@ import {
 } from "@poketeam/store";
 import { teamMessageStream } from "@poketeam/agent";
 import { localizeTeam, localizeProse } from "@poketeam/data";
-import { LANG, enc, localizeEntry, localizeTeams } from "../localize";
+import { LANG, enc, t, localizeEntry, localizeTeams } from "../localize";
 import type { Team } from "@poketeam/types";
 
 type Req<P> = Request & { params: P };
@@ -29,10 +29,13 @@ export const teamsRoutes = {
       const { message } = (await req.json()) as { message?: string };
       const entry = (await getTeams()).at(i);
       if (!entry) {
-        return Response.json({ error: "Équipe introuvable." }, { status: 404 });
+        return Response.json(
+          { error: t("Équipe introuvable.", "Team not found.") },
+          { status: 404 },
+        );
       }
       if (!message?.trim()) {
-        return Response.json({ error: "Message vide." }, { status: 400 });
+        return Response.json({ error: t("Message vide.", "Empty message.") }, { status: 400 });
       }
 
       const pool = entry.team.team.map((m) => m.name).filter(Boolean);
@@ -71,9 +74,8 @@ export const teamsRoutes = {
 
             let teams;
             if (version) {
-              const note = version.strategy
-                ? `✅ Équipe mise à jour. ${version.strategy}`
-                : "✅ Équipe mise à jour.";
+              const updated = t("✅ Équipe mise à jour.", "✅ Team updated.");
+              const note = version.strategy ? `${updated} ${version.strategy}` : updated;
               teams = await addVersion(i, version, message.trim(), note);
             } else if (answer) {
               teams = await appendChat(i, message.trim(), answer);

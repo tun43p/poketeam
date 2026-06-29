@@ -2,6 +2,7 @@
 // (EN/FR/typo) → canonical EN name, or null if unknown. display/localize do the
 // reverse path (EN → target language). localizeProse translates free prose.
 import { db, norm, type Category } from "./db";
+import { LANG } from "./lang";
 
 const qCanon = db.query<{ en: string }, [string, string]>(
   "SELECT en FROM lookup WHERE category=? AND norm=? LIMIT 1",
@@ -32,7 +33,7 @@ const qDisplay = db.query<{ name: string }, [string, string, string]>(
 export function display(
   category: Category,
   en?: string | null,
-  lang: "fr" | "en" = "fr",
+  lang: "fr" | "en" = LANG,
 ): string | null {
   if (!en) return null;
   if (lang === "en") return en;
@@ -40,7 +41,7 @@ export function display(
 }
 
 // Any spelling → name in the target language. Unknown: we keep the original entry.
-export function localize(category: Category, name?: string | null, lang: "fr" | "en" = "fr") {
+export function localize(category: Category, name?: string | null, lang: "fr" | "en" = LANG) {
   const en = canon(category, name);
   return en ? display(category, en, lang) : (name ?? null);
 }
@@ -72,7 +73,7 @@ function buildProse() {
   // alphanum boundaries (handles spaces/apostrophes/hyphens internal to names).
   proseRe = new RegExp(`(?<![\\p{L}\\p{N}])(?:${keys.join("|")})(?![\\p{L}\\p{N}])`, "giu");
 }
-export function localizeProse(text?: string | null, lang: "fr" | "en" = "fr"): string | null {
+export function localizeProse(text?: string | null, lang: "fr" | "en" = LANG): string | null {
   if (!text || lang === "en") return text ?? null;
   if (!proseRe || !proseMap) buildProse();
   const re = proseRe;

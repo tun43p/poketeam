@@ -1,5 +1,6 @@
 // Boxes (Pokémon slots): read, create/edit, delete, duplicate, rename.
 import { getBoxes, saveBox, deleteBox, duplicateBox, renameBox } from "@poketeam/store";
+import { t } from "../localize";
 
 type Req<P> = Request & { params: P };
 
@@ -13,7 +14,10 @@ export const boxesRoutes = {
       };
 
       if (!name?.trim()) {
-        return Response.json({ error: "Nom de slot requis." }, { status: 400 });
+        return Response.json(
+          { error: t("Nom de slot requis.", "Slot name required.") },
+          { status: 400 },
+        );
       }
 
       return Response.json(await saveBox(name.trim(), mons ?? []));
@@ -31,7 +35,10 @@ export const boxesRoutes = {
     PUT: async (req: Req<{ name: string }>) => {
       const { to } = (await req.json()) as { to?: string };
       if (!to?.trim()) {
-        return Response.json({ error: "Nouveau nom requis." }, { status: 400 });
+        return Response.json(
+          { error: t("Nouveau nom requis.", "New name required.") },
+          { status: 400 },
+        );
       }
 
       return Response.json(await renameBox(decodeURIComponent(req.params.name), to.trim()));

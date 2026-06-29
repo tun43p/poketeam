@@ -1,5 +1,6 @@
 import { useMemo, useState, type KeyboardEvent } from "react";
 import { levenshtein, norm, TYPE_COLORS, type Boxes, type Mon } from "./lib";
+import { t } from "./i18n";
 import wp1 from "./assets/wp1.png";
 import wp2 from "./assets/wp2.png";
 import wp3 from "./assets/wp3.png";
@@ -96,7 +97,7 @@ export function BoxesPage({
   }
 
   async function del(slot: string) {
-    if (!window.confirm(`Supprimer la boîte « ${slot} » ?`)) return;
+    if (!window.confirm(t(`Supprimer la boîte « ${slot} » ?`, `Delete the box “${slot}”?`))) return;
     setBoxes(
       await fetch(`/api/boxes/${encodeURIComponent(slot)}`, { method: "DELETE" }).then(
         (r) => r.json() as Promise<Boxes>,
@@ -113,7 +114,7 @@ export function BoxesPage({
   }
 
   async function rename(slot: string) {
-    const to = window.prompt("Nouveau nom de la boîte :", slot);
+    const to = window.prompt(t("Nouveau nom de la boîte :", "New box name:"), slot);
     if (!to?.trim()) return;
     setBoxes(
       await fetch(`/api/boxes/${encodeURIComponent(slot)}/rename`, {
@@ -137,7 +138,7 @@ export function BoxesPage({
 
   return (
     <>
-      <h2>Mes boîtes</h2>
+      <h2>{t("Mes boîtes", "My boxes")}</h2>
       {slots.length > 0 && (
         <div className="slots">
           {slots.map(([slot, mons]) => (
@@ -150,13 +151,25 @@ export function BoxesPage({
               >
                 {slot} ({mons.length}) ✎
               </button>
-              <button className="dup" title="Dupliquer" onClick={() => void duplicate(slot)}>
+              <button
+                className="dup"
+                title={t("Dupliquer", "Duplicate")}
+                onClick={() => void duplicate(slot)}
+              >
                 ⧉
               </button>
-              <button className="ren" title="Renommer" onClick={() => void rename(slot)}>
+              <button
+                className="ren"
+                title={t("Renommer", "Rename")}
+                onClick={() => void rename(slot)}
+              >
                 ✎
               </button>
-              <button className="del" title="Supprimer" onClick={() => void del(slot)}>
+              <button
+                className="del"
+                title={t("Supprimer", "Delete")}
+                onClick={() => void del(slot)}
+              >
                 ✕
               </button>
             </span>
@@ -165,11 +178,15 @@ export function BoxesPage({
       )}
 
       <div className="editor">
-        <h3>{name && name in boxes ? `Éditer « ${name} »` : "Nouvelle boîte"}</h3>
+        <h3>
+          {name && name in boxes
+            ? t(`Éditer « ${name} »`, `Edit “${name}”`)
+            : t("Nouvelle boîte", "New box")}
+        </h3>
 
         <input
           className="slotname"
-          placeholder="Nom de la boîte (ex. « Boîte PC 1 »)"
+          placeholder={t("Nom de la boîte (ex. « Boîte PC 1 »)", "Box name (e.g. “PC Box 1”)")}
           value={name}
           onChange={(e) => {
             setName(e.target.value);
@@ -178,7 +195,10 @@ export function BoxesPage({
 
         <div className="search">
           <input
-            placeholder="Chercher un Pokémon (accents ignorés)…"
+            placeholder={t(
+              "Chercher un Pokémon (accents ignorés)…",
+              "Search a Pokémon (accents ignored)…",
+            )}
             value={q}
             onChange={(e) => {
               setQ(e.target.value);
@@ -217,7 +237,7 @@ export function BoxesPage({
             >
               ◀
             </button>
-            <span className="box-name">{name.trim() || "Nouvelle boîte"}</span>
+            <span className="box-name">{name.trim() || t("Nouvelle boîte", "New box")}</span>
             <span className="box-count">{picked.length}</span>
             <button
               className="box-nav"
@@ -272,7 +292,7 @@ export function BoxesPage({
             onClick={() => void save()}
             disabled={!name.trim() || !picked.length}
           >
-            💾 Enregistrer la boîte
+            {t("💾 Enregistrer la boîte", "💾 Save the box")}
           </button>
           {(picked.length > 0 || name) && (
             <button
@@ -282,7 +302,7 @@ export function BoxesPage({
                 setName("");
               }}
             >
-              annuler
+              {t("annuler", "cancel")}
             </button>
           )}
         </div>

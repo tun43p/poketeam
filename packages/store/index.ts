@@ -9,3 +9,4 @@ export {
   setActiveVersion,
   appendChat,
 } from "./teams";
+export { getLang, chooseLang } from "./settings";
