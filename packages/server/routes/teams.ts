@@ -2,6 +2,7 @@
 // rename. Everything is localized to FR on output; persisted in EN.
 import {
   getTeams,
+  getBoxes,
   deleteTeam,
   renameTeam,
   addVersion,
@@ -38,7 +39,12 @@ export const teamsRoutes = {
         return Response.json({ error: t("Message vide.", "Empty message.") }, { status: 400 });
       }
 
-      const pool = entry.team.team.map((m) => m.name).filter(Boolean);
+      // Pool = the team's own members + every Pokémon across all boxes, so Claudia
+      // has real candidates to swap in (not just the 6 already on the team).
+      const boxMons = Object.values(await getBoxes()).flat();
+      const pool = [...new Set([...entry.team.team.map((m) => m.name), ...boxMons])].filter(
+        Boolean,
+      );
       const stream = new ReadableStream({
         async start(controller) {
           let answer = "";

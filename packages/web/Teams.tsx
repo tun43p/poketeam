@@ -119,8 +119,8 @@ function TeamThread({
 
       <textarea
         placeholder={t(
-          "Pose une question ou demande une modif : « comment la jouer ? », « rends-la plus défensive », « change l'objet de… »",
-          "Ask a question or request a change: “how do I play it?”, “make it more defensive”, “change the item of…”",
+          "Pose une question ou demande une modif : « comment la jouer ? », « remplace X par un autre Pokémon », « rends-la plus défensive »",
+          "Ask a question or request a change: “how do I play it?”, “swap X for another Pokémon”, “make it more defensive”",
         )}
         value={msg}
         onChange={(e) => {
