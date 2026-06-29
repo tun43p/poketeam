@@ -22,7 +22,8 @@ async function gql(query: string): Promise<any> {
 const norm = (s: string) =>
   s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().replace(/[^a-z0-9]/g, "");
 
-const db = new Database("poke.db", { create: true });
+// poke.db est écrit à côté de ce module (résolu via import.meta.dir, pas le cwd).
+const db = new Database(`${import.meta.dir}/poke.db`, { create: true });
 
 // ---- Schéma : détail en anglais pur, `lookup` = unique table multilingue ----
 db.exec(`DROP TABLE IF EXISTS lookup`);

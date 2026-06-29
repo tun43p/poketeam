@@ -1,5 +1,5 @@
 import index from "./web/index.html";
-import { pokemonList, getTypes, localizeTeam, localizeProse } from "./data";
+import { pokemonList, getTypes, localizeTeam, localizeProse } from "@poketeam/data";
 import { generateTeamStream, teamMessageStream } from "./agent";
 import {
   getBoxes,

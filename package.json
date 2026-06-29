@@ -3,13 +3,15 @@
   "module": "server.ts",
   "type": "module",
   "private": true,
+  "workspaces": ["packages/*"],
   "scripts": {
     "dev": "bun --hot server.ts",
     "start": "bun server.ts",
-    "build:db": "bun build-db.ts"
+    "build:db": "bun packages/data/build.ts"
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "latest",
+    "@poketeam/data": "workspace:*",
     "zod": "^3"
   },
   "devDependencies": {

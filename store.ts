@@ -2,7 +2,7 @@
 // Un seul fichier JSON, stocké 100% en ANGLAIS canonique (l'affichage est localisé
 // au rendu côté serveur). ponytail: pas de lock, un seul utilisateur local.
 // Surchargé par STORE_FILE pour les tests, afin de ne JAMAIS toucher le vrai store.json.
-import { canon } from "./data";
+import { canon } from "@poketeam/data";
 const FILE = process.env.STORE_FILE || "store.json";
 
 // Ramène une équipe (ancien format FR avec name_fr/name_en, OU déjà EN) vers

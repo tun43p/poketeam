@@ -4,7 +4,7 @@ import {
   createSdkMcpServer,
 } from "@anthropic-ai/claude-agent-sdk";
 import { z } from "zod";
-import { getPokemon, getMeta, getMove, getAbility, getItem, getType, canon, inChampions } from "./data";
+import { getPokemon, getMeta, getMove, getAbility, getItem, getType, canon, inChampions } from "@poketeam/data";
 
 // L'IA ne produit que de l'anglais. Le serveur RECANONICALISE chaque nom via la BDD
 // (aucune valeur n'entre sans passer par canon()) et réinjecte les données

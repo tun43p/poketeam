@@ -2,7 +2,7 @@
 import { expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
 
-const db = new Database("poke.db", { readonly: true });
+const db = new Database(`${import.meta.dir}/poke.db`, { readonly: true });
 const norm = (s: string) =>
   s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().replace(/[^a-z0-9]/g, "");
 const canon = (cat: string, name: string) =>
