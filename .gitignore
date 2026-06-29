@@ -44,3 +44,6 @@ store.json.bak-*
 
 # Generated reference database (rebuild with `bun run build:db`)
 poke.db
+
+# Playwright MCP screenshots
+.playwright-mcp/

@@ -1,5 +1,17 @@
 import { useMemo, useState, type KeyboardEvent } from "react";
 import { levenshtein, norm, TYPE_COLORS, type Boxes, type Mon } from "./lib";
+import wp1 from "./assets/wp1.png";
+import wp2 from "./assets/wp2.png";
+import wp3 from "./assets/wp3.png";
+import wp4 from "./assets/wp4.png";
+
+// Vrais papiers peints de boîte (gen3). Chaque boîte garde le sien (hash du nom).
+const WALLPAPERS = [wp1, wp2, wp3, wp4];
+function wpFor(name: string): string {
+  let h = 0;
+  for (const c of name) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return WALLPAPERS[h % WALLPAPERS.length] ?? wp1;
+}
 
 // ---------- Écran boîtes : créer / éditer / supprimer ----------
 export function BoxesPage({
@@ -113,6 +125,15 @@ export function BoxesPage({
   }
 
   const slots = Object.entries(boxes);
+  const names = Object.keys(boxes);
+
+  // Navigation ◀ ▶ entre boîtes (charge la précédente / suivante pour édition).
+  function cycle(dir: number) {
+    if (!names.length) return;
+    const i = name in boxes ? names.indexOf(name) : dir > 0 ? -1 : 0;
+    const next = names[(i + dir + names.length) % names.length];
+    if (next) edit(next);
+  }
 
   return (
     <>
@@ -186,11 +207,32 @@ export function BoxesPage({
         </div>
 
         <div className="pcbox">
-          <div className="pcbox-head">
-            <span className="pcbox-title">{name.trim() || "Nouvelle boîte"}</span>
-            <span className="pcbox-count">{picked.length}</span>
+          <div className="pcbox-banner">
+            <button
+              className="box-nav"
+              onClick={() => {
+                cycle(-1);
+              }}
+              disabled={!names.length}
+            >
+              ◀
+            </button>
+            <span className="box-name">{name.trim() || "Nouvelle boîte"}</span>
+            <span className="box-count">{picked.length}</span>
+            <button
+              className="box-nav"
+              onClick={() => {
+                cycle(1);
+              }}
+              disabled={!names.length}
+            >
+              ▶
+            </button>
           </div>
-          <div className="pcbox-grid">
+          <div
+            className="pcbox-grid"
+            style={{ backgroundImage: `url(${wpFor(name || "Nouvelle boîte")})` }}
+          >
             {picked.map((m) => (
               <button
                 key={m.id}
@@ -216,7 +258,7 @@ export function BoxesPage({
               </button>
             ))}
             {Array.from({
-              length: Math.max(60, Math.ceil((picked.length + 1) / 12) * 12) - picked.length,
+              length: Math.max(30, Math.ceil((picked.length + 1) / 6) * 6) - picked.length,
             }).map((_, k) => (
               <span key={`e${k}`} className="cell empty" />
             ))}

@@ -33,6 +33,219 @@
   box-sizing: border-box;
 }
 
+/* ===========================================================================
+   CENTRE POKÉMON — la scène jouable (vue du dessus). Tu marches vers Claudia
+   (comptoir) ou le PC (coin). Tout est dessiné en CSS + sprites SVG.
+   =========================================================================== */
+.center-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: radial-gradient(circle at 50% 40%, #3a3340, #14121a 80%);
+}
+
+/* La salle = vrai intérieur de Centre Pokémon (FRLG, sprite gen3). */
+.room {
+  position: relative;
+  width: min(95vw, 760px);
+  aspect-ratio: 240 / 160;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  image-rendering: pixelated;
+  box-shadow:
+    0 0 0 4px var(--ink),
+    0 0 0 10px #000,
+    0 18px 40px #000a;
+  transition: filter 0.25s;
+}
+.room.dim {
+  filter: brightness(0.6) saturate(0.85);
+}
+
+/* Étiquettes cliquables (au-dessus de Claudia et du PC) */
+.hotspot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 6;
+  font-family: var(--pix);
+  font-size: 0.5rem;
+  background: var(--yellow);
+  color: var(--ink);
+  border: 0;
+  padding: 0.45rem 0.6rem;
+  cursor: pointer;
+  box-shadow:
+    var(--frame),
+    0 4px 0 0 var(--yellow-dark);
+  animation: bob 0.9s ease-in-out infinite;
+}
+.hotspot:hover {
+  background: #fff;
+}
+@keyframes bob {
+  0%,
+  100% {
+    margin-top: 0;
+  }
+  50% {
+    margin-top: -5px;
+  }
+}
+
+/* Le dresseur (toi) — sprite gen3 16×32 découpé dans la planche de 9 frames. */
+.player {
+  position: absolute;
+  z-index: 5;
+  width: 6.667%; /* 16 / 240 */
+  aspect-ratio: 1 / 2;
+  background-size: 900% 100%; /* 9 frames en largeur */
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  transition:
+    left 0.6s linear,
+    top 0.6s linear;
+  filter: drop-shadow(0 2px 0 #0004);
+}
+
+/* PNJ (Claudia) : même découpe, sprite fixe de face. */
+.npc {
+  position: absolute;
+  z-index: 4;
+  width: 6.667%;
+  aspect-ratio: 1 / 2;
+  transform: translate(-50%, -100%);
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 2px 0 #0004);
+}
+
+/* ---- Boîte de dialogue façon Pokémon ---- */
+.dlg-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  padding: 1.5rem;
+  cursor: pointer;
+}
+.dlg-box {
+  position: relative;
+  width: min(100%, 920px);
+  margin: 0 auto;
+  background: #fff;
+  color: var(--ink);
+  padding: 1.4rem 1.6rem;
+  font-size: 1.5rem;
+  line-height: 1.4;
+  box-shadow:
+    0 0 0 4px #2a3b8f,
+    0 0 0 8px #fff,
+    0 0 0 12px var(--ink);
+}
+.dlg-name {
+  position: absolute;
+  top: -1.1rem;
+  left: 1rem;
+  font-family: var(--pix);
+  font-size: 0.6rem;
+  color: #fff;
+  background: var(--red);
+  padding: 0.4rem 0.6rem;
+  box-shadow: var(--frame);
+}
+.dlg-text {
+  margin: 0;
+  min-height: 2.6em;
+  white-space: pre-wrap;
+}
+.dlg-arrow {
+  margin-left: 0.4rem;
+  color: var(--blue);
+  animation: blink 0.7s steps(1) infinite;
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+.dlg-menu {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0.8rem 1rem;
+  background: #fff;
+  box-shadow:
+    0 0 0 4px #2a3b8f,
+    0 0 0 8px #fff,
+    0 0 0 12px var(--ink);
+}
+.dlg-menu li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.2rem;
+  cursor: pointer;
+  font-size: 1.35rem;
+}
+.dlg-menu li.on {
+  color: var(--red);
+  font-weight: bold;
+}
+.dlg-cursor {
+  width: 1ch;
+  color: var(--red);
+}
+
+/* ---- Panneau plein écran (PC / Claudia) ---- */
+.panel {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  overflow-y: auto;
+  background:
+    radial-gradient(circle at 15% -10%, #e9e9f0 0, transparent 45%),
+    radial-gradient(circle at 95% 0%, #ececf2 0, transparent 45%), var(--bg);
+}
+.panel-bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  background: var(--red);
+  box-shadow: 0 4px 0 0 var(--ink);
+}
+.panel-back {
+  font-family: var(--pix);
+  font-size: 0.6rem;
+  background: var(--yellow);
+  color: var(--ink);
+  border: 0;
+  padding: 0.6rem 0.8rem;
+  cursor: pointer;
+  box-shadow: var(--frame);
+  margin: var(--b);
+}
+.panel-back:hover {
+  background: #fff;
+}
+.panel-title {
+  font-family: var(--pix);
+  font-size: 0.7rem;
+  color: #fff;
+  text-shadow: 2px 2px 0 var(--ink);
+}
+.panel-body {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1.75rem 1.25rem 6rem;
+}
+
 body {
   margin: 0;
   color: var(--ink);
@@ -343,54 +556,65 @@ nav a.on {
 /* ---- Boîte PC (style storage Pokémon) ---- */
 .pcbox {
   margin: var(--b) 0 1.25rem;
-  box-shadow: var(--frame);
+  background: #d9cdb0;
+  box-shadow:
+    var(--frame),
+    6px 8px 0 0 rgba(0, 0, 0, 0.25);
 }
-.pcbox-head {
+/* Bannière façon boîte gen3 : flèches ◀ ▶ + nom + compteur */
+.pcbox-banner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.6rem;
-  background: var(--navy);
-  color: #fff;
-  padding: 0.7rem 1rem;
+  gap: 0.8rem;
+  padding: 0.5rem 0.7rem;
+  background: linear-gradient(#fff3cf, #ffe49b);
+  border-bottom: 4px solid var(--ink);
+}
+.box-nav {
   font-family: var(--pix);
-  font-size: 0.65rem;
-  line-height: 1.4;
-}
-.pcbox-head::before {
-  content: "◀";
-  color: var(--yellow);
-}
-.pcbox-title {
-  flex: 1;
-  text-align: center;
-}
-.pcbox-count {
-  background: var(--yellow);
-  color: var(--ink);
-  padding: 0.25rem 0.55rem;
+  font-size: 0.7rem;
+  background: var(--red);
+  color: #fff;
+  border: 0;
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
   box-shadow: var(--frame);
 }
-.pcbox-head::after {
-  content: "▶";
-  color: var(--yellow);
+.box-nav:hover:not(:disabled) {
+  background: #f0440f;
+}
+.box-nav:disabled {
+  background: #c9bfa6;
+  color: #8a8270;
+  cursor: default;
+}
+.box-name {
+  flex: 1;
+  text-align: center;
+  font-family: var(--pix);
+  font-size: 0.75rem;
+  color: var(--navy);
+}
+.box-count {
+  font-family: var(--pix);
+  font-size: 0.6rem;
+  background: var(--navy);
+  color: #fff;
+  padding: 0.3rem 0.55rem;
+  box-shadow: var(--frame);
 }
 .pcbox-grid {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 0.4rem;
-  padding: 0.8rem;
-  background:
-    repeating-linear-gradient(
-      45deg,
-      rgba(255, 255, 255, 0.18) 0 14px,
-      rgba(255, 255, 255, 0.07) 14px 28px
-    ),
-    linear-gradient(160deg, #bfe3ff, #8ec5ef);
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.5rem;
+  padding: 1rem;
+  background-size: cover;
+  background-position: center;
+  image-rendering: pixelated;
 }
-@media (max-width: 720px) {
+@media (max-width: 560px) {
   .pcbox-grid {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 .cell {
@@ -402,14 +626,14 @@ nav a.on {
   border: 0;
   border-radius: 10px;
   padding: 0;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.45);
   box-shadow:
-    inset 0 0 0 2px rgba(255, 255, 255, 0.7),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.6),
     0 2px 0 rgba(0, 0, 0, 0.12);
 }
 .cell.empty {
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.22);
 }
 .cell.filled {
   cursor: pointer;
@@ -879,16 +1103,25 @@ details.sub[open] > summary {
   margin-top: 1.5rem;
 }
 .strategy {
-  background: var(--panel);
+  position: relative;
+  background: #fffdf6;
   border: 0;
+  border-left: 8px solid var(--red);
   color: var(--ink);
-  font-size: 1.2rem;
-  line-height: 1.35;
-  padding: 1.1rem 1.25rem;
-  margin: var(--b);
-  box-shadow:
-    var(--frame),
-    0 6px 0 0 var(--red);
+  font-size: 1.15rem;
+  line-height: 1.45;
+  padding: 1.4rem 1.4rem 1.2rem;
+  margin: var(--b) var(--b) 2rem;
+  box-shadow: 4px 5px 0 0 rgba(0, 0, 0, 0.14);
+}
+.strategy::before {
+  content: "STRATÉGIE";
+  display: block;
+  font-family: var(--pix);
+  font-size: 0.55rem;
+  color: var(--red);
+  margin-bottom: 0.7rem;
+  letter-spacing: 0.5px;
 }
 .grid {
   display: grid;
@@ -897,30 +1130,31 @@ details.sub[open] > summary {
   margin-top: 1.75rem;
 }
 .card {
-  background: var(--panel);
+  background: #fffdf6;
   border: 0;
-  padding: 0 1rem 1.1rem;
+  padding: 0 1.1rem 1.2rem;
   box-shadow:
-    var(--frame),
-    6px 8px 0 0 rgba(0, 0, 0, 0.3);
+    0 0 0 3px var(--ink),
+    4px 6px 0 0 rgba(0, 0, 0, 0.16);
   margin: var(--b);
 }
 .card-head {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
-  margin: 0 -1rem 1rem;
-  padding: 1rem;
-  background: var(--navy);
+  gap: 1rem;
+  margin: 0 -1.1rem 1.1rem;
+  padding: 1rem 1.1rem;
+  background: linear-gradient(135deg, var(--navy), var(--blue));
   color: #fff;
-  box-shadow: 0 var(--b) 0 0 var(--ink);
+  box-shadow: inset 0 -4px 0 0 rgba(0, 0, 0, 0.25);
 }
 .portrait {
-  width: 72px;
-  height: 72px;
+  width: 84px;
+  height: 84px;
   flex: none;
-  background: #fff;
-  padding: 3px;
+  background: radial-gradient(circle at 50% 45%, #fff 60%, #e8eefb);
+  padding: 4px;
+  border-radius: 50%;
   box-shadow: 0 0 0 3px var(--ink);
   image-rendering: pixelated;
 }
@@ -1117,14 +1351,13 @@ dd .effect-en {
 details {
   background: var(--panel);
   border: 0;
+  border-left: 6px solid var(--blue);
   padding: 1rem 1.1rem;
   margin: var(--b) var(--b) 1.25rem;
-  box-shadow: var(--frame);
+  box-shadow: 3px 4px 0 0 rgba(0, 0, 0, 0.12);
 }
 details[open] {
-  box-shadow:
-    var(--frame),
-    0 6px 0 0 var(--blue);
+  border-left-color: var(--red);
 }
 details summary {
   cursor: pointer;
