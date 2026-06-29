@@ -9,6 +9,7 @@
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "latest",
     "@poketeam/data": "workspace:*",
+    "@poketeam/types": "workspace:*",
     "zod": "^3"
   }
 }

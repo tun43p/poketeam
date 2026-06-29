@@ -5,19 +5,22 @@ import { tools, ALLOWED_TOOLS } from "./tools";
 import { COACH_SYSTEM } from "./prompts";
 import { enrichTeam } from "./enrich";
 import { parseTeam } from "./parse";
+import type { Team, ChatMessage } from "@poketeam/types";
 
-type ChatMsg = { role: "user" | "assistant"; text: string };
 type MsgEvent =
   | { type: "progress"; text: string }
   | { type: "answer"; text: string }
-  | { type: "version"; team: any }
+  | { type: "version"; team: Team }
   | { type: "error"; error: string };
 
+// Entrées d'outils que l'on inspecte pour les messages de progression.
+type ToolInput = { query?: string; url?: string; name?: string };
+
 export async function* teamMessageStream(opts: {
-  team: any;
+  team: Team;
   pool: string[];
   format: "Doubles" | "Singles";
-  history: ChatMsg[];
+  history: ChatMessage[];
   message: string;
 }): AsyncGenerator<MsgEvent> {
   const convo = opts.history
@@ -47,15 +50,15 @@ Message du joueur: ${opts.message}`;
       },
     })) {
       if (m.type === "assistant") {
-        for (const block of m.message.content as any[]) {
+        for (const block of m.message.content) {
           if (block.type === "tool_use") {
-            const inp = block.input;
-            const bn = String(block.name);
+            const inp = block.input as ToolInput;
+            const bn = block.name;
             if (bn === "WebSearch")
-              yield { type: "progress", text: `Recherche sur internet : ${inp?.query ?? ""}` };
+              yield { type: "progress", text: `Recherche sur internet : ${inp.query ?? ""}` };
             else if (bn === "WebFetch")
-              yield { type: "progress", text: `Consulte une source : ${inp?.url ?? ""}` };
-            else yield { type: "progress", text: `Vérifie les données : ${inp?.name ?? ""}` };
+              yield { type: "progress", text: `Consulte une source : ${inp.url ?? ""}` };
+            else yield { type: "progress", text: `Vérifie les données : ${inp.name ?? ""}` };
           }
         }
       } else if (m.type === "result" && m.subtype === "success") {

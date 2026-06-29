@@ -1,10 +1,11 @@
 // Équipes générées : sauvegarde, suppression, renommage, versions restaurables et
 // fil de discussion. Tout est stocké en ANGLAIS canonique.
 import { read, write } from "./read";
+import type { Team } from "@poketeam/types";
 
 export const getTeams = async () => (await read()).teams;
 
-export async function saveTeam(entry: { format: string; prompt: string; team: any }) {
+export async function saveTeam(entry: { format: string; prompt: string; team: Team }) {
   const s = await read();
   s.teams.unshift({ savedAt: new Date().toISOString(), ...entry });
   await write(s);
@@ -22,7 +23,7 @@ export async function deleteTeam(index: number) {
 }
 
 // Nouvelle version d'équipe (suite à une modif) + trace dans le fil de discussion.
-export async function addVersion(index: number, team: any, prompt: string, note: string) {
+export async function addVersion(index: number, team: Team, prompt: string, note: string) {
   const s = await read();
   const t = s.teams[index];
   if (t) {

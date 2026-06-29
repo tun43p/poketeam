@@ -8,6 +8,7 @@
     "@poketeam/agent": "workspace:*",
     "@poketeam/data": "workspace:*",
     "@poketeam/store": "workspace:*",
+    "@poketeam/types": "workspace:*",
     "@poketeam/web": "workspace:*"
   }
 }

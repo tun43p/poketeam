@@ -1,5 +1,16 @@
+import type { Team, StoredTeam } from "@poketeam/types";
+
 export type Mon = { id: number; fr: string; en: string; sprite: string; types?: string[] };
 export type Boxes = Record<string, string[]>;
+
+// Évènements ndjson émis par le serveur pendant la génération / le chat.
+export type StreamEvent =
+  | { type: "progress"; text: string }
+  | { type: "error"; error: string }
+  | { type: "done"; team: Team }
+  | { type: "version"; team: Team }
+  | { type: "answer"; text: string }
+  | { type: "saved"; entry: StoredTeam };
 
 export const norm = (s: string) =>
   s
@@ -86,7 +97,7 @@ export function exportPdf(id: string, title: string) {
 }
 
 // Lit un flux ndjson et passe chaque évènement à onEvent.
-export async function streamNdjson(url: string, body: any, onEvent: (ev: any) => void) {
+export async function streamNdjson(url: string, body: unknown, onEvent: (ev: StreamEvent) => void) {
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -101,13 +112,17 @@ export async function streamNdjson(url: string, body: any, onEvent: (ev: any) =>
     buf += dec.decode(value, { stream: true });
     const lines = buf.split("\n");
     buf = lines.pop()!;
-    for (const l of lines) if (l.trim()) onEvent(JSON.parse(l));
+    for (const l of lines) if (l.trim()) onEvent(JSON.parse(l) as StreamEvent);
   }
 }
 
 export function streamGenerate(
-  body: { selected: string[]; prompt: string; format: string; refine?: any },
-  h: { onProgress: (t: string) => void; onError: (e: string) => void; onDone: (team: any) => void },
+  body: { selected: string[]; prompt: string; format: string; refine?: Team },
+  h: {
+    onProgress: (t: string) => void;
+    onError: (e: string) => void;
+    onDone: (team: Team) => void;
+  },
 ) {
   return streamNdjson("/api/generate", body, (ev) => {
     if (ev.type === "progress") h.onProgress(ev.text);

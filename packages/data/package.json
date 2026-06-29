@@ -8,5 +8,8 @@
   },
   "scripts": {
     "build": "bun build.ts"
+  },
+  "dependencies": {
+    "@poketeam/types": "workspace:*"
   }
 }

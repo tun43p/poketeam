@@ -1,4 +1,5 @@
 import { TYPE_COLORS, type Mon } from "./lib";
+import type { Team, BaseStats, Move } from "@poketeam/types";
 
 // Pastille de type avec couleur + icône (si disponible).
 function TypeChip({
@@ -21,7 +22,7 @@ function TypeChip({
 }
 
 // Stats de base (clés Tyradex → libellés FR courts).
-const STATS: [keyof any, string][] = [
+const STATS: [keyof BaseStats, string][] = [
   ["hp", "PV"],
   ["atk", "Attaque"],
   ["def", "Défense"],
@@ -51,30 +52,30 @@ export function Result({
   byEn,
   typeImg,
 }: {
-  result: any;
+  result: { team: Team };
   byEn: Map<string, Mon>;
   typeImg: Map<string, string>;
 }) {
   const team = result.team;
-  if (!team?.team) return null;
+  if (!team.team) return null;
   return (
     <section className="result">
       {team.strategy && <p className="strategy">{team.strategy}</p>}
       <div className="grid">
-        {team.team.map((m: any, i: number) => {
-          const sprite = byEn.get(m.name_en)?.sprite;
+        {team.team.map((m, i) => {
+          const sprite = byEn.get(m.name_en ?? m.name)?.sprite;
           return (
             <article key={i} className="card">
               <div className="card-head">
-                {sprite && <img className="portrait" src={sprite} alt={m.name_fr} />}
+                {sprite && <img className="portrait" src={sprite} alt={m.name_fr ?? ""} />}
                 <div>
                   <h3>
                     {m.name_fr} <span className="muted">/ {m.name_en}</span>
                   </h3>
                   {m.role && <p className="role">{m.role}</p>}
-                  {m.types?.length > 0 && (
+                  {m.types && m.types.length > 0 && (
                     <div className="types">
-                      {m.types.map((t: string, k: number) => (
+                      {m.types.map((t, k) => (
                         <TypeChip key={k} type={t} typeImg={typeImg} />
                       ))}
                     </div>
@@ -86,7 +87,7 @@ export function Result({
                 <div className="stats">
                   {STATS.map(([k, label]) => (
                     <span key={label} className="stat">
-                      <b>{label}</b> {m.base_stats[k] ?? "—"}
+                      <b>{label}</b> {m.base_stats?.[k] ?? "—"}
                     </span>
                   ))}
                 </div>
@@ -129,9 +130,10 @@ export function Result({
 
               {m.moves && (
                 <ul className="moves">
-                  {m.moves.map((mv: any, j: number) => {
+                  {m.moves.map((mv: Move | string, j: number) => {
                     if (typeof mv === "string") return <li key={j}>{mv}</li>;
-                    const img = typeImg.get(mv.type);
+                    const mvType = mv.type ?? "";
+                    const img = typeImg.get(mvType);
                     const meta = [
                       mv.category,
                       mv.power ? `Puiss. ${mv.power}` : null,
@@ -144,17 +146,17 @@ export function Result({
                       <li
                         key={j}
                         className="typed"
-                        style={{ background: TYPE_COLORS[mv.type] ?? "var(--navy)" }}
+                        style={{ background: TYPE_COLORS[mvType] ?? "var(--navy)" }}
                       >
                         <span className="move-name">
                           {img && <img className="type-ico" src={img} alt="" />}
                           {mv.name}
                         </span>
                         {meta && <span className="move-meta">{meta}</span>}
-                        {mv.strong_against?.length > 0 && (
+                        {mv.strong_against && mv.strong_against.length > 0 && (
                           <div className="move-strong">
                             <span className="ms-label">Fort vs</span>
-                            {mv.strong_against.map((t: string, k: number) => (
+                            {mv.strong_against.map((t, k) => (
                               <TypeChip key={k} type={t} typeImg={typeImg} />
                             ))}
                           </div>
@@ -166,10 +168,10 @@ export function Result({
                 </ul>
               )}
 
-              {m.weaknesses?.length > 0 && (
+              {m.weaknesses && m.weaknesses.length > 0 && (
                 <div className="weak">
                   <span className="weak-label">Faiblesses</span>
-                  {m.weaknesses.map((w: any, k: number) => (
+                  {m.weaknesses.map((w, k) => (
                     <TypeChip
                       key={k}
                       type={w.type}
@@ -179,10 +181,10 @@ export function Result({
                   ))}
                 </div>
               )}
-              {m.resistances?.length > 0 && (
+              {m.resistances && m.resistances.length > 0 && (
                 <div className="weak">
                   <span className="weak-label">Résiste</span>
-                  {m.resistances.map((w: any, k: number) => (
+                  {m.resistances.map((w, k) => (
                     <TypeChip
                       key={k}
                       type={w.type}
@@ -192,10 +194,10 @@ export function Result({
                   ))}
                 </div>
               )}
-              {m.immunities?.length > 0 && (
+              {m.immunities && m.immunities.length > 0 && (
                 <div className="weak">
                   <span className="weak-label">Immunité</span>
-                  {m.immunities.map((t: string, k: number) => (
+                  {m.immunities.map((t, k) => (
                     <TypeChip key={k} type={t} typeImg={typeImg} />
                   ))}
                 </div>

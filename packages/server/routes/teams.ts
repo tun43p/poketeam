@@ -11,6 +11,7 @@ import {
 import { teamMessageStream } from "@poketeam/agent";
 import { localizeTeam, localizeProse } from "@poketeam/data";
 import { LANG, enc, localizeEntry, localizeTeams } from "../localize";
+import type { Team } from "@poketeam/types";
 
 type Req<P> = Request & { params: P };
 
@@ -34,11 +35,11 @@ export const teamsRoutes = {
         return Response.json({ error: "Message vide." }, { status: 400 });
       }
 
-      const pool = (entry.team?.team || []).map((m: any) => m.name).filter(Boolean);
+      const pool = (entry.team.team || []).map((m) => m.name).filter(Boolean);
       const stream = new ReadableStream({
         async start(controller) {
           let answer = "";
-          let version: any = null;
+          let version: Team | null = null;
           try {
             for await (const ev of teamMessageStream({
               team: entry.team,

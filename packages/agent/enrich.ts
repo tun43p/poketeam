@@ -2,9 +2,10 @@
 // (aucune valeur n'entre sans passer par canon()) et réinjecte les données
 // déterministes (types/faiblesses, type d'attaque). L'équipe stockée est 100% EN.
 import { canon, getPokemon, getMove } from "@poketeam/data";
+import type { Team } from "@poketeam/types";
 
-export function enrichTeam(team: any) {
-  if (!team?.team) return;
+export function enrichTeam(team: Team) {
+  if (!team.team) return;
   for (const m of team.team) {
     m.name = canon("pokemon", m.name) ?? m.name;
     const p = getPokemon(m.name);

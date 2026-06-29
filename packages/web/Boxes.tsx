@@ -73,7 +73,7 @@ export function BoxesPage({
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: name.trim(), mons: picked.map((p) => p.en) }),
-      }).then((r) => r.json()),
+      }).then((r) => r.json() as Promise<Boxes>),
     );
     setName("");
     setPicked([]);
@@ -82,8 +82,8 @@ export function BoxesPage({
   async function del(slot: string) {
     if (!window.confirm(`Supprimer la boîte « ${slot} » ?`)) return;
     setBoxes(
-      await fetch(`/api/boxes/${encodeURIComponent(slot)}`, { method: "DELETE" }).then((r) =>
-        r.json(),
+      await fetch(`/api/boxes/${encodeURIComponent(slot)}`, { method: "DELETE" }).then(
+        (r) => r.json() as Promise<Boxes>,
       ),
     );
   }
@@ -91,7 +91,7 @@ export function BoxesPage({
   async function duplicate(slot: string) {
     setBoxes(
       await fetch(`/api/boxes/${encodeURIComponent(slot)}/duplicate`, { method: "POST" }).then(
-        (r) => r.json(),
+        (r) => r.json() as Promise<Boxes>,
       ),
     );
   }
@@ -104,7 +104,7 @@ export function BoxesPage({
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ to: to.trim() }),
-      }).then((r) => r.json()),
+      }).then((r) => r.json() as Promise<Boxes>),
     );
   }
 

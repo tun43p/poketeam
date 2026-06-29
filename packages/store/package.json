@@ -7,6 +7,7 @@
     ".": "./index.ts"
   },
   "dependencies": {
-    "@poketeam/data": "workspace:*"
+    "@poketeam/data": "workspace:*",
+    "@poketeam/types": "workspace:*"
   }
 }

@@ -1,9 +1,12 @@
 // Le modèle n'emballe pas toujours le JSON de façon identique. On tente, dans l'ordre :
-// bloc ```json, bloc ``` simple, puis du premier "{" au dernier "}".
-export function parseTeam(raw: string): any {
-  const tryParse = (s?: string) => {
+// bloc ```json, bloc ``` simple, puis du premier "{" au dernier "}". On ne renvoie un
+// résultat que s'il contient bien une clé `team` (sinon null).
+import type { Team } from "@poketeam/types";
+
+export function parseTeam(raw: string): Team | null {
+  const tryParse = (s?: string): Team | null => {
     try {
-      return s ? JSON.parse(s) : null;
+      return s ? (JSON.parse(s) as Team) : null;
     } catch {
       return null;
     }

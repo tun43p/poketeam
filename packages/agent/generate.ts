@@ -6,11 +6,15 @@ import { tools, ALLOWED_TOOLS } from "./tools";
 import { SYSTEM } from "./prompts";
 import { enrichTeam } from "./enrich";
 import { parseTeam } from "./parse";
+import type { Team } from "@poketeam/types";
 
 type Event =
   | { type: "progress"; text: string }
-  | { type: "done"; team: any }
+  | { type: "done"; team: Team }
   | { type: "error"; error: string };
+
+// Entrées d'outils que l'on inspecte pour les messages de progression.
+type ToolInput = { query?: string; url?: string; name?: string };
 
 const MAX_ATTEMPTS = 3;
 
@@ -18,7 +22,7 @@ export async function* generateTeamStream(opts: {
   selected: string[];
   prompt: string;
   format: "Doubles" | "Singles";
-  refine?: any; // équipe actuelle à modifier (re-prompt)
+  refine?: Team; // équipe actuelle à modifier (re-prompt)
 }): AsyncGenerator<Event> {
   const base = `Format: ${opts.format === "Doubles" ? "Double (duo)" : "Simple (solo)"}.
 Boîte du joueur (pool disponible, ${opts.selected.length} Pokémon): ${opts.selected.join(", ")}.`;
@@ -56,21 +60,21 @@ Demande de l'utilisateur: ${opts.prompt || "(aucune préférence particulière)"
       },
     })) {
       if (m.type === "assistant") {
-        for (const block of m.message.content as any[]) {
+        for (const block of m.message.content) {
           if (block.type === "tool_use") {
-            const inp = block.input;
-            const bn = String(block.name);
+            const inp = block.input as ToolInput;
+            const bn = block.name;
             if (bn === "WebSearch")
               yield {
                 type: "progress",
-                text: `Recherche les meilleures équipes : ${inp?.query ?? ""}`,
+                text: `Recherche les meilleures équipes : ${inp.query ?? ""}`,
               };
             else if (bn === "WebFetch")
-              yield { type: "progress", text: `Consulte une source : ${inp?.url ?? ""}` };
+              yield { type: "progress", text: `Consulte une source : ${inp.url ?? ""}` };
             else if (bn.endsWith("get_meta"))
-              yield { type: "progress", text: `Consulte le méta Champions : ${inp?.name ?? ""}` };
+              yield { type: "progress", text: `Consulte le méta Champions : ${inp.name ?? ""}` };
             else if (bn.endsWith("get_pokemon"))
-              yield { type: "progress", text: `Analyse le typage : ${inp?.name ?? ""}` };
+              yield { type: "progress", text: `Analyse le typage : ${inp.name ?? ""}` };
           }
         }
       } else if (m.type === "result" && m.subtype === "success") {

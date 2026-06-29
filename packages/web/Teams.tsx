@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { exportPdf, streamNdjson, type Mon } from "./lib";
 import { Result } from "./Result";
+import type { StoredTeam } from "@poketeam/types";
 
 // Fil unique sous une équipe : l'agent comprend tout seul question vs modification.
 // Chaque modif crée une version restaurable. Tout est persisté côté serveur.
@@ -10,8 +11,8 @@ function TeamThread({
   onUpdate,
 }: {
   index: number;
-  entry: any;
-  onUpdate: (e: any) => void;
+  entry: StoredTeam;
+  onUpdate: (e: StoredTeam) => void;
 }) {
   const [msg, setMsg] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,7 +36,7 @@ function TeamThread({
         else if (ev.type === "error") setError(ev.error);
         else if (ev.type === "saved") onUpdate(ev.entry);
       });
-    } catch (e: any) {
+    } catch (e) {
       setError(String(e));
     } finally {
       setLoading(false);
@@ -48,7 +49,7 @@ function TeamThread({
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ v }),
-    }).then((r) => r.json());
+    }).then((r) => r.json() as Promise<StoredTeam[]>);
     onUpdate(teams[index]);
   }
 
@@ -57,7 +58,7 @@ function TeamThread({
       <details className="sub">
         <summary>Versions ({versions.length})</summary>
         <ul className="versionlist">
-          {versions.map((vv: any, idx: number) => (
+          {versions.map((vv, idx) => (
             <li key={idx} className={idx === active ? "on" : ""}>
               <button onClick={() => revert(idx)} disabled={idx === active}>
                 {idx === active ? "✓ actuelle" : "Restaurer"}
@@ -75,7 +76,7 @@ function TeamThread({
         <details className="sub" open>
           <summary>Messages ({chat.length})</summary>
           <div className="chat">
-            {chat.map((m: any, k: number) => (
+            {chat.map((m, k) => (
               <p key={k} className={`bubble ${m.role}`}>
                 {m.text}
               </p>
@@ -109,10 +110,10 @@ export function TeamsPage({
   byEn: Map<string, Mon>;
   typeImg: Map<string, string>;
 }) {
-  const [teams, setTeams] = useState<any[] | null>(null);
+  const [teams, setTeams] = useState<StoredTeam[] | null>(null);
   useEffect(() => {
     void fetch("/api/teams")
-      .then((r) => r.json())
+      .then((r) => r.json() as Promise<StoredTeam[]>)
       .then(setTeams);
   }, []);
 
@@ -124,13 +125,17 @@ export function TeamsPage({
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: name.trim() }),
-      }).then((r) => r.json()),
+      }).then((r) => r.json() as Promise<StoredTeam[]>),
     );
   }
 
   async function deleteTeam(i: number) {
     if (!window.confirm("Supprimer cette équipe ?")) return;
-    setTeams(await fetch(`/api/teams/${i}`, { method: "DELETE" }).then((r) => r.json()));
+    setTeams(
+      await fetch(`/api/teams/${i}`, { method: "DELETE" }).then(
+        (r) => r.json() as Promise<StoredTeam[]>,
+      ),
+    );
   }
 
   if (teams === null) return <p className="muted">Chargement…</p>;
@@ -149,7 +154,7 @@ export function TeamsPage({
       {teams.map((t, i) => (
         <details key={i} open={i === 0}>
           <summary>
-            <strong>{t.name || (t.team?.team || []).map((m: any) => m.name_fr).join(", ")}</strong>
+            <strong>{t.name || t.team.team.map((m) => m.name_fr).join(", ")}</strong>
             <span className="meta">
               {" "}
               · {t.format} · {new Date(t.savedAt).toLocaleString("fr-FR")}

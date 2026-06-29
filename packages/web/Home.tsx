@@ -2,6 +2,7 @@ import { useState } from "react";
 import { streamGenerate, type Boxes, type Mon } from "./lib";
 import { exportPdf } from "./lib";
 import { Result } from "./Result";
+import type { Team } from "@poketeam/types";
 
 // Barre « affiner » : re-prompt une équipe existante pour y appliquer des modifications.
 function RefineBar({
@@ -12,8 +13,8 @@ function RefineBar({
 }: {
   pool: string[];
   format: string;
-  current: any;
-  onDone: (team: any, prompt: string) => void;
+  current: Team;
+  onDone: (team: Team, prompt: string) => void;
 }) {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
@@ -37,7 +38,7 @@ function RefineBar({
           },
         },
       );
-    } catch (e: any) {
+    } catch (e) {
       setError(String(e));
     } finally {
       setLoading(false);
@@ -77,7 +78,7 @@ export function Home({
   const [format, setFormat] = useState<"Doubles" | "Singles">("Doubles");
   const [loading, setLoading] = useState(false);
   const [steps, setSteps] = useState<string[]>([]);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<{ team: Team } | null>(null);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
 
@@ -103,7 +104,7 @@ export function Home({
           },
         },
       );
-    } catch (e: any) {
+    } catch (e) {
       setError(String(e));
     } finally {
       setLoading(false);

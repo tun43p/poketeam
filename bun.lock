@@ -21,12 +21,16 @@
       "dependencies": {
         "@anthropic-ai/claude-agent-sdk": "latest",
         "@poketeam/data": "workspace:*",
+        "@poketeam/types": "workspace:*",
         "zod": "^3",
       },
     },
     "packages/data": {
       "name": "@poketeam/data",
       "version": "0.0.0",
+      "dependencies": {
+        "@poketeam/types": "workspace:*",
+      },
     },
     "packages/server": {
       "name": "@poketeam/server",
@@ -35,6 +39,7 @@
         "@poketeam/agent": "workspace:*",
         "@poketeam/data": "workspace:*",
         "@poketeam/store": "workspace:*",
+        "@poketeam/types": "workspace:*",
         "@poketeam/web": "workspace:*",
       },
     },
@@ -43,12 +48,18 @@
       "version": "0.0.0",
       "dependencies": {
         "@poketeam/data": "workspace:*",
+        "@poketeam/types": "workspace:*",
       },
+    },
+    "packages/types": {
+      "name": "@poketeam/types",
+      "version": "0.0.0",
     },
     "packages/web": {
       "name": "@poketeam/web",
       "version": "0.0.0",
       "dependencies": {
+        "@poketeam/types": "workspace:*",
         "react": "^19",
         "react-dom": "^19",
       },
@@ -160,6 +171,8 @@
     "@poketeam/server": ["@poketeam/server@workspace:packages/server"],
 
     "@poketeam/store": ["@poketeam/store@workspace:packages/store"],
+
+    "@poketeam/types": ["@poketeam/types@workspace:packages/types"],
 
     "@poketeam/web": ["@poketeam/web@workspace:packages/web"],
 

@@ -2,21 +2,39 @@
 // avec cache disque court. Le cache vit dans .cache/ (relatif au cwd, ignoré par git).
 import { mkdir } from "node:fs/promises";
 
+interface MetaRow {
+  category: string;
+  name: string;
+  percentage: number;
+  stat_up?: string;
+  stat_down?: string;
+  hp_points?: number;
+  attack_points?: number;
+  defense_points?: number;
+  sp_atk_points?: number;
+  sp_def_points?: number;
+  speed_points?: number;
+}
+interface MetaResponse {
+  pokemon?: unknown;
+  rows?: MetaRow[];
+}
+
 const CACHE = ".cache";
 await mkdir(CACHE, { recursive: true });
-async function cachedJson(key: string, url: string, ttlMs = 6 * 3600_000): Promise<any> {
+async function cachedJson<T>(key: string, url: string, ttlMs = 6 * 3600_000): Promise<T> {
   const f = Bun.file(`${CACHE}/${key}.json`);
-  if ((await f.exists()) && Date.now() - f.lastModified < ttlMs) return f.json();
-  const data = await fetch(url).then((r) => r.json());
+  if ((await f.exists()) && Date.now() - f.lastModified < ttlMs) return (await f.json()) as T;
+  const data = (await fetch(url).then((r) => r.json())) as T;
   await Bun.write(f, JSON.stringify(data));
   return data;
 }
 
 export async function getMeta(name: string, format: "Doubles" | "Singles") {
   const slug = name.replace(/\s+/g, "-").toLowerCase();
-  let data: any;
+  let data: MetaResponse;
   try {
-    data = await cachedJson(
+    data = await cachedJson<MetaResponse>(
       `meta-${format}-${slug}`,
       `https://championsbattledata.com/api/battle/${format}/${encodeURIComponent(name)}`,
     );
@@ -24,7 +42,7 @@ export async function getMeta(name: string, format: "Doubles" | "Singles") {
     return { error: `No meta data for ${name} (${format})` };
   }
 
-  const rows: any[] = data?.rows ?? [];
+  const rows = data.rows ?? [];
   if (!rows.length) return { note: `No Champions usage data for ${name}.` };
 
   const top = (cat: string, n = 5) => rows.filter((r) => r.category === cat).slice(0, n);

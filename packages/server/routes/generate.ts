@@ -4,6 +4,7 @@ import { generateTeamStream } from "@poketeam/agent";
 import { saveTeam } from "@poketeam/store";
 import { localizeTeam } from "@poketeam/data";
 import { LANG, enc } from "../localize";
+import type { Team } from "@poketeam/types";
 
 export const generateRoutes = {
   "/api/generate": {
@@ -12,7 +13,7 @@ export const generateRoutes = {
         selected?: string[];
         prompt?: string;
         format?: string;
-        refine?: any;
+        refine?: Team;
       };
 
       const selected = body.selected ?? [];
