@@ -1,0 +1,12 @@
+{
+  "name": "@poketeam/store",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {
+    "@poketeam/data": "workspace:*"
+  }
+}

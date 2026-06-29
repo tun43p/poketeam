@@ -12,6 +12,7 @@
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "latest",
     "@poketeam/data": "workspace:*",
+    "@poketeam/store": "workspace:*",
     "zod": "^3"
   },
   "devDependencies": {

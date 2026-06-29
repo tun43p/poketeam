@@ -14,7 +14,7 @@ import {
   addVersion,
   setActiveVersion,
   appendChat,
-} from "./store";
+} from "@poketeam/store";
 
 const enc = new TextEncoder();
 
