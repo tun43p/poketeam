@@ -41,3 +41,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 # User data (local single-user store)
 store.json
 store.json.bak-*
+
+# Generated reference database (rebuild with `bun run build:db`)
+poke.db
